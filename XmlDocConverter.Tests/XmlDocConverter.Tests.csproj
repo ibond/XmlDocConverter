@@ -50,9 +50,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <None Include="TestScripts\BasicScript.xdc.cs" />
+    <Compile Include="TestScripts\BasicScript.xdc.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XmlDocConverter\XmlDocConverter.csproj">
+      <Project>{c61a3581-09cf-4037-bc18-dc714a8cb08c}</Project>
+      <Name>XmlDocConverter</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

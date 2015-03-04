@@ -1,0 +1,1 @@
+- Put most classes in to namespaces in XmlDocConverter to minimize what shows up when you import the XmlDocConverter namespace.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,8 +34,37 @@ namespace XmlDocConverter
 		/// </summary>
 		public void Run()
 		{
-			m_runScript();
+			using (var runContext = new ScriptRunContext())
+			{
+				// Set the call context for this so it's available to all functions in the script.
+				CallContext.LogicalSetData(ScriptRunContextDataName, runContext);
+				try
+				{
+					m_runScript();
+				}
+				finally
+				{
+					// Clear the call context when we're done running.
+					CallContext.FreeNamedDataSlot(ScriptRunContextDataName);
+				}
+			}
 		}
+
+		/// <summary>
+		/// Get the current script run context.
+		/// </summary>
+		public static ScriptRunContext CurrentRunContext
+		{
+			get
+			{
+				return (ScriptRunContext)CallContext.LogicalGetData(ScriptRunContextDataName);
+			}
+		}
+
+		/// <summary>
+		/// The name of the data in the logical call context.
+		/// </summary>
+		private static readonly string ScriptRunContextDataName = "XmlDocConverter.ScriptRunContext";
 
 		/// <summary>
 		/// The delegate for running this script.

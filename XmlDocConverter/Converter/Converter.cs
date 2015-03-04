@@ -13,6 +13,10 @@ namespace XmlDocConverter
 	/// </summary>
 	public static class Converter
 	{
+		/// <summary>
+		/// Convert the document from a script file.
+		/// </summary>
+		/// <param name="scriptPath">The path to the script file.</param>
 		public static void ConvertFromScript(string scriptPath)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(scriptPath));
