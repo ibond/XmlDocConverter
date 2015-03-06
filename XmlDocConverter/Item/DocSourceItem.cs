@@ -19,42 +19,43 @@ namespace XmlDocConverter
 		/// Construct an DocSourceItem.
 		/// </summary>
 		/// <param name="documentSource">The assembly member sources to be used for this context.</param>
-		public DocSourceItem(ImmutableList<AssemblyMembers> documentSource)
+		/// <param name="context">The emit context associated with this item.</param>
+		public DocSourceItem(ImmutableList<AssemblyMembers> documentSource, EmitContext<DocSourceItem> context)
 		{
 			Contract.Requires(documentSource != null);
 			Contract.Requires(Contract.ForAll(documentSource, d => d != null));
 			Contract.Ensures(this.m_documentSource != null);
 
 			m_documentSource = documentSource;
+			m_context = context;
 		}
 		
 		/// <summary>
 		/// Groups the items in the EmitContext by Assembly.
 		/// </summary>
-		//public EmitItemGroup<AssemblyItem, DocSourceItem> Assemblies
-		//{
-		//	get
-		//	{			
-		//		return new EmitItemGroup<AssemblyItem, DocSourceItem>(
-		//			m_documentSource
-		//				.Select(
-		//					source =>
-		//					{
-		//						var item = new AssemblyItem(
-		//							source.Assembly,
-		//							EmitContext<DocSourceItem>.MakeContext<AssemblyItem>(m_context, item));
-		//						return new EmitItemGroupEntry<AssemblyItem>(
-		//							item,
-		//							EmitContext<DocSourceItem>.MakeContext<AssemblyItem>(m_context, item, new AssemblyMembers[] { source }.ToImmutableList()));
-		//					})
-		//				.ToImmutableList(),
-		//			m_context);
-		//	}
-		//}
+		public EmitContextGroup<AssemblyItem, DocSourceItem> Assemblies
+		{
+			get
+			{
+				return new EmitContextGroup<AssemblyItem, DocSourceItem>(
+					m_documentSource
+						.Select(
+							source => new EmitContext<AssemblyItem>(
+								m_context, 
+								new LazyEmitItem<AssemblyItem>(context=>new AssemblyItem(source.Assembly, context))))
+						.ToImmutableList(),
+					m_context);
+			}
+		}
 		
 		/// <summary>
 		/// The assembly members for this doc source.
 		/// </summary>
 		private readonly ImmutableList<AssemblyMembers> m_documentSource;
+
+		/// <summary>
+		/// The emit context for this item.
+		/// </summary>
+		private readonly EmitContext<DocSourceItem> m_context;
 	}
 }

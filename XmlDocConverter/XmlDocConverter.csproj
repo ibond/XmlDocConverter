@@ -55,7 +55,10 @@
     <Compile Include="Emit\Emit.cs" />
     <Compile Include="Fluent\EmitContext.cs" />
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
-    <Compile Include="Fluent\EmitWriter.cs" />
+    <Compile Include="Fluent\EmitWriterContext.cs" />
+    <Compile Include="Fluent\LazyEmitItem.cs" />
+    <Compile Include="Fluent\Writer\WriteExtension.cs" />
+    <Compile Include="Fluent\Writer\WriteHeader.cs" />
     <Compile Include="Item\DocSourceItem.cs" />
     <Compile Include="Item\EnumItem.cs" />
     <Compile Include="Item\ClassItem.cs" />
