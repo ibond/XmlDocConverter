@@ -13,7 +13,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// A context for a class.
 	/// </summary>
-	public class ClassContext : DocumentContext
+	public class ClassContext : ScalarDocumentContext
 	{
 		/// <summary>
 		/// Construct an ClassContext.
@@ -69,11 +69,43 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContextCollection<ClassContext, SourceDocumentContextType> Classes<SourceDocumentContextType>(this IContextSelector<SourceDocumentContextType, IClassContextProvider> selector)
+		//public static EmitContextCollection<ClassContext, SourceDocumentContextType> Classes<SourceDocumentContextType>(this IContextSelector<SourceDocumentContextType, IClassContextProvider> selector)
+		//	where SourceDocumentContextType : DocumentContext
+		//{
+		//	return new EmitContextCollection<ClassContext, SourceDocumentContextType>(
+		//		selector.DocumentContext.Classes.Select(ClassContext => selector.EmitContext.ReplaceDocumentContext(ClassContext)), selector.EmitContext);
+		//}
+
+		public static EmitContext<DocumentContextCollection<ClassContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>> 
+			Classes<SourceDocumentContextType, SourceParentEmitContextType>(
+				this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IClassContextProvider> selector)
 			where SourceDocumentContextType : DocumentContext
+			where SourceParentEmitContextType : EmitContext
 		{
-			return new EmitContextCollection<ClassContext, SourceDocumentContextType>(
-				selector.DocumentContext.Classes.Select(ClassContext => selector.EmitContext.ReplaceDocumentContext(ClassContext)), selector.EmitContext);
+			Contract.Requires(selector != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
+
+			return selector.EmitContext
+				.ReplaceParentContext(selector.EmitContext)
+				.ReplaceDocumentContext(new DocumentContextCollection<ClassContext>(selector.DocumentContext.Classes));
+		}
+
+		/// <summary>
+		/// Select all of the assemblies from a document context collection.
+		/// </summary>
+		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
+		/// <returns>The selected assembly emit contexts.</returns>
+		public static EmitContext<DocumentContextCollection<ClassContext>, SourceParentEmitContextType>
+			Classes<SourceDocumentContextType, SourceParentEmitContextType>(
+				this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IDocumentContextCollection<IClassContextProvider>> selector)
+			where SourceDocumentContextType : DocumentContext
+			where SourceParentEmitContextType : EmitContext
+		{
+			Contract.Requires(selector != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
+
+			return selector.EmitContext
+				.ReplaceDocumentContext(new DocumentContextCollection<ClassContext>(selector.DocumentContext.Elements.SelectMany(element => element.Classes)));
 		}
 	}
 }

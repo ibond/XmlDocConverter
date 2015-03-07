@@ -21,7 +21,7 @@ namespace XmlDocConverter
 		/// Create the run context with an initial root context.
 		/// </summary>
 		/// <param name="initialRootContext">The root context that will be used each time an emit chain is started.</param>
-		public ScriptRunContext(EmitContext<RootContext> initialRootContext = null)
+		public ScriptRunContext(EmitContext<RootContext, EmitContext> initialRootContext = null)
 		{
 			// If we don't have a root context we create an empty one.
 			m_initialEmitContext = initialRootContext ?? EmitContext.Create();
@@ -71,7 +71,7 @@ namespace XmlDocConverter
 				// Write all of the emit targets.
 				foreach (var target in m_emitTargets)
 				{
-					target.Target(target.WriterContext.OutputContext.GetData());
+					target.Target(target.WriterContext.OutputContext.Data);
 				}
 				m_emitTargets.Clear();
 
@@ -131,7 +131,7 @@ namespace XmlDocConverter
 		/// <summary>
 		/// Get the initial emit context.
 		/// </summary>
-		public EmitContext<RootContext> InitialEmitContext { get { return m_initialEmitContext; } }
+		public EmitContext<RootContext, EmitContext> InitialEmitContext { get { return m_initialEmitContext; } }
 		
 		/// <summary>
 		/// The list of objects that should be automatically disposed after running the script.
@@ -156,6 +156,6 @@ namespace XmlDocConverter
 		/// <summary>
 		/// This is the initial emit context.  This is what is used when calling an Emit function.
 		/// </summary>
-		private readonly EmitContext<RootContext> m_initialEmitContext;
+		private readonly EmitContext<RootContext, EmitContext> m_initialEmitContext;
 	}
 }

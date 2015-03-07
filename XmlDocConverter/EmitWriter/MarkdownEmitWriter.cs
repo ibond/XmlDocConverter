@@ -14,7 +14,7 @@ namespace XmlDocConverter
 	/// </summary>
 	public static class MarkdownEmitWriter
 	{
-		public static readonly EmitFormatterContext GitHub = new EmitFormatterContext();
+		public static readonly EmitFormatterContext GitHub = EmitFormatterContext.Default;
 		//public void Write(EmitContext emit, AssemblyItem item)
 		//{
 		//	Contract.Requires(item != null);

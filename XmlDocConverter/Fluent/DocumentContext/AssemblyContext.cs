@@ -13,7 +13,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// A context for an assembly.
 	/// </summary>
-	public class AssemblyContext : DocumentContext, IClassContextProvider
+	public class AssemblyContext : ScalarDocumentContext, IClassContextProvider
 	{
 		/// <summary>
 		/// Construct an AssemblyContext.
@@ -81,14 +81,78 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected assembly emit contexts.</returns>
-		public static EmitContextCollection<AssemblyContext, SourceDocumentContextType> Assemblies<SourceDocumentContextType>(this IContextSelector<SourceDocumentContextType, IAssemblyContextProvider> selector)
+		public static EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>> Assemblies<SourceDocumentContextType, SourceParentEmitContextType>(this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IAssemblyContextProvider> selector)
 			where SourceDocumentContextType : DocumentContext
+			where SourceParentEmitContextType : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContextCollection<AssemblyContext, SourceDocumentContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
 
-			return new EmitContextCollection<AssemblyContext, SourceDocumentContextType>(
-				selector.DocumentContext.Assemblies.Select(assemblyContext => selector.EmitContext.ReplaceDocumentContext(assemblyContext)), selector.EmitContext);
+			return selector.EmitContext
+				.ReplaceParentContext(selector.EmitContext)
+				.ReplaceDocumentContext(new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Assemblies));
+		}
+
+		/// <summary>
+		/// Select all of the assemblies from a document context collection.
+		/// </summary>
+		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
+		/// <returns>The selected assembly emit contexts.</returns>
+		public static EmitContext<DocumentContextCollection<AssemblyContext>, SourceParentEmitContextType> 
+			Assemblies<SourceDocumentContextType, SourceParentEmitContextType>(
+				this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IDocumentContextCollection<IAssemblyContextProvider>> selector)
+			where SourceDocumentContextType : DocumentContext
+			where SourceParentEmitContextType : EmitContext
+		{
+			Contract.Requires(selector != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
+
+			var col = new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Elements.SelectMany(element => element.Assemblies));
+			return selector.EmitContext
+				.ReplaceDocumentContext(col);
 		}
 	}
+
+	///// <summary>
+	///// This provides the extensions for writing AssemblyContext objects..
+	///// </summary>
+	//public static class AssemblyContextWriterExtensions
+	//{
+	//	public static ParentEmitContextType Write<ParentEmitContextType>(this EmitContext<DocumentContextCollection<RootContext>, ParentEmitContextType> context)
+	//		where ParentEmitContextType : EmitContext
+	//	{
+	//		return context.ForEach(emit => emit.Write());
+	//	}
+
+	//	public static EmitContext<RootContext, ParentEmitContextType> Write<ParentEmitContextType>(this EmitContext<RootContext, ParentEmitContextType> context)
+	//		where ParentEmitContextType : EmitContext
+	//	{
+	//		return context;
+	//		//return context
+	//		//	.Select.Assemblies()
+	//		//	.Write();
+	//	}
+
+	//	/// <summary>
+	//	/// Set the base directory for where we are emitting files.
+	//	/// </summary>
+	//	/// <param name="directoryPath">The path to the base directory.</param>
+	//	/// <returns>A new context with the updated base directory.</returns>
+	//	public static EmitContext<DocumentContextType, ParentEmitContextType> InDirectory<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string directoryPath)
+	//		where DocumentContextType : DocumentContext
+	//		where ParentEmitContextType : EmitContext
+	//	{
+	//		Contract.Requires(context != null);
+	//		Contract.Requires(!String.IsNullOrWhiteSpace(directoryPath));
+	//		Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
+
+	//		// Set the base directory.
+	//		return context.ReplaceLocalDataMap(context.GetLocalDataMap().SetItem(BaseDirectoryDataMapKey, directoryPath));
+	//	}
+
+	//	/// <summary>
+	//	/// This object is used as a key into the emit context data map for storing the assembly context write function.
+	//	/// </summary>
+	//	private static object AssemblyContextWriterKey = new object();
+	//}
 }

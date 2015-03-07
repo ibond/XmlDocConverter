@@ -22,12 +22,13 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="textWriter">The TextWriter to act as the target.</param>
 		/// <returns>An updated emit context with the target set to this TextWriter.</returns>
-		public static EmitContext<DocumentContextType> ToTextWriter<DocumentContextType>(this EmitContext<DocumentContextType> context, TextWriter textWriter)
+		public static EmitContext<DocumentContextType, ParentEmitContextType> ToTextWriter<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, TextWriter textWriter)
 			where DocumentContextType : DocumentContext
+			where ParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(textWriter != null);
-			Contract.Requires(Contract.Result<EmitContext<DocumentContextType>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
 						
 			// Replace the target context
 			return context.ReplaceTargetContext(
@@ -50,12 +51,13 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="filePath">The path to the file.</param>
 		/// <returns>An updated emit context with the target set to this file.</returns>
-		public static EmitContext<DocumentContextType> ToFile<DocumentContextType>(this EmitContext<DocumentContextType> context, string filePath)
+		public static EmitContext<DocumentContextType, ParentEmitContextType> ToFile<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string filePath)
 			where DocumentContextType : DocumentContext
+			where ParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(!String.IsNullOrWhiteSpace(filePath));
-			Contract.Requires(Contract.Result<EmitContext<DocumentContextType>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
 
 			// Get the base directory.
 			object baseDirectoryObject;
@@ -96,15 +98,16 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="directoryPath">The path to the base directory.</param>
 		/// <returns>A new context with the updated base directory.</returns>
-		public static EmitContext<DocumentContextType> InDirectory<DocumentContextType>(this EmitContext<DocumentContextType> context, string directoryPath)
+		public static EmitContext<DocumentContextType, ParentEmitContextType> InDirectory<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string directoryPath)
 			where DocumentContextType : DocumentContext
+			where ParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(!String.IsNullOrWhiteSpace(directoryPath));
-			Contract.Requires(Contract.Result<EmitContext<DocumentContextType>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
 
 			// Set the base directory.
-			return context.ReplaceLocalDataMap(context.GetLocalDataMap().SetItem(BaseDirectoryDataMapKey, directoryPath));
+			return context.SetLocalData(BaseDirectoryDataMapKey, directoryPath);
 		}
 		
 		/// <summary>
@@ -124,12 +127,13 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="stringBuilderTarget">The string builder that will accept the emitted text.</param>
 		/// <returns>An updated emit context with the target set to this StringBuilder.</returns>
-		public static EmitContext<DocumentContextType> ToTextWriter<DocumentContextType>(this EmitContext<DocumentContextType> context, StringBuilder stringBuilderTarget)
+		public static EmitContext<DocumentContextType, ParentEmitContextType> ToTextWriter<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, StringBuilder stringBuilderTarget)
 			where DocumentContextType : DocumentContext
+			where ParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(stringBuilderTarget != null);
-			Contract.Requires(Contract.Result<EmitContext<DocumentContextType>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
 
 			// Replace the target context
 			return context.ReplaceTargetContext(
