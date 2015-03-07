@@ -64,7 +64,7 @@ namespace XmlDocConverter
 		/// <summary>
 		/// The name of the data in the logical call context.
 		/// </summary>
-		private static readonly string ScriptRunContextDataName = "XmlDocConverter.ScriptRunContext";
+		internal static readonly string ScriptRunContextDataName = "XmlDocConverter.ScriptRunContext";
 
 		/// <summary>
 		/// The delegate for running this script.

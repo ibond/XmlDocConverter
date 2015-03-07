@@ -51,12 +51,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converter\Converter.cs" />
+    <Compile Include="Fluent\Control\ContextSelector.cs" />
+    <Compile Include="Fluent\DocumentContext\AssemblyContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DocumentContext.cs" />
+    <Compile Include="Fluent\DocumentContext\RootContext.cs" />
     <Compile Include="Emit\XmlDocPathPair.cs" />
     <Compile Include="Emit\Emit.cs" />
+    <Compile Include="Fluent\Control\SelectorExtensions.cs" />
+    <Compile Include="Fluent\Control\ControlExtensions.cs" />
+    <Compile Include="Fluent\DocumentSource\DocumentSource.cs" />
+    <Compile Include="Fluent\DocumentSource\StandardDocumentSources.cs" />
     <Compile Include="Fluent\EmitContext.cs" />
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
+    <Compile Include="Fluent\EmitContextGroup.cs" />
     <Compile Include="Fluent\EmitWriterContext.cs" />
     <Compile Include="Fluent\LazyEmitItem.cs" />
+    <Compile Include="Fluent\Target\StandardTargets.cs" />
+    <Compile Include="Fluent\Writer\DocumentContextWriteExtensions.cs" />
+    <Compile Include="Fluent\Writer\FormatterExtensions.cs" />
     <Compile Include="Fluent\Writer\WriteExtension.cs" />
     <Compile Include="Fluent\Writer\WriteHeader.cs" />
     <Compile Include="Item\DocSourceItem.cs" />
@@ -76,6 +88,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Formatter\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
