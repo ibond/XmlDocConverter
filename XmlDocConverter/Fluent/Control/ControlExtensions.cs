@@ -31,5 +31,32 @@ namespace XmlDocConverter.Fluent
 			// Always return this context and ignore what happens in the scope action.
 			return context;
 		}
+
+		/// <summary>
+		/// Executes the function for each EmitContext and returns to the collection source.
+		/// </summary>
+		/// <param name="source">The current emit context.</param>
+		/// <param name="action">The action containing the emit operation to run on each emit context.</param>
+		/// <returns>The the source of the EmitContextCollection.</returns>
+		public static EmitContext<SourceDocumentContextType> 
+			ForEach<DocumentContextType, SourceDocumentContextType>(
+				this EmitContextCollection<DocumentContextType, SourceDocumentContextType> source, 
+				Action<EmitContext<DocumentContextType>> action)
+			where DocumentContextType : DocumentContext
+			where SourceDocumentContextType : DocumentContext
+		{
+			Contract.Requires(source != null);
+			Contract.Requires(action != null);
+			Contract.Requires(Contract.Result<EmitContextCollection<DocumentContextType, SourceDocumentContextType>>() == source);
+
+			// Run the action for each element.
+			foreach (var element in source.Contexts)
+			{
+				action(element);
+			}
+
+			// Always return this context.
+			return source.Source;
+		}
 	}
 }

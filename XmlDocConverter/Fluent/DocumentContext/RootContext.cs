@@ -12,7 +12,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// The root context for emitting documents.  This effectively contains a list of assemblies.
 	/// </summary>
-	public class RootContext : DocumentContext, IAssemblyContextProvider
+	public class RootContext : DocumentContext, IAssemblyContextProvider, IClassContextProvider
 	{
 		/// <summary>
 		/// Construct an RootContext.
@@ -31,6 +31,17 @@ namespace XmlDocConverter.Fluent
 			get
 			{
 				return DocumentSource.AssemblyMembers.Select(source => new AssemblyContext(DocumentSource, source.Assembly));
+			}
+		}
+		
+		/// <summary>
+		/// Groups the items in the EmitContext by class.
+		/// </summary>
+		public IEnumerable<ClassContext> Classes
+		{
+			get
+			{
+				return Assemblies.SelectMany(assembly => assembly.Classes);
 			}
 		}
 	}

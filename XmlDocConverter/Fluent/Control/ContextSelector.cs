@@ -12,12 +12,13 @@ namespace XmlDocConverter.Fluent.Detail
 	/// An interface to the context selector.  This allows us to be covariant on the document context type.
 	/// </summary>
 	/// <typeparam name="DocumentContextType">The type of the document context.  This may be an interface implemented by a document context as well.</typeparam>
-	public interface IContextSelector<out DocumentContextType>
+	public interface IContextSelector<EmitDocumentContextType, out DocumentContextType>
+		where EmitDocumentContextType : DocumentContext
 	{
 		/// <summary>
 		/// Gets the EmitContext for this context selector.
 		/// </summary>
-		EmitContext EmitContext { get; }
+		EmitContext<EmitDocumentContextType> EmitContext { get; }
 
 		/// <summary>
 		/// Gets the document context for this context selector.
@@ -28,7 +29,7 @@ namespace XmlDocConverter.Fluent.Detail
 	/// <summary>
 	/// This is a utility class that allows us to use the .Select.Assemblies syntax.
 	/// </summary>
-	public class ContextSelector<DocumentContextType> : IContextSelector<DocumentContextType>
+	public class ContextSelector<DocumentContextType> : IContextSelector<DocumentContextType, DocumentContextType>
 		where DocumentContextType : DocumentContext
 	{
 		/// <summary>
@@ -46,7 +47,7 @@ namespace XmlDocConverter.Fluent.Detail
 		/// <summary>
 		/// Get the emit context.
 		/// </summary>
-		public EmitContext EmitContext { get { return m_emitContext; } }
+		public EmitContext<DocumentContextType> EmitContext { get { return m_emitContext; } }
 
 		/// <summary>
 		/// Get the document context.

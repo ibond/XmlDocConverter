@@ -12,7 +12,15 @@ class Script
 			.Using(MarkdownEmitWriter.GitHub)
 			.InDirectory(@"C:\Work\temp\xdc_test")
 			.From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
-			.Select.Assemblies()
+			.Select.Assemblies().ForEach(emit =>
+			{
+				emit.Select.Classes();
+			})
+			.Select.Assemblies().ForEach(emit =>
+			{
+			})
+			.Select.Classes()
+			;
 			//.Select2.Assemblies()
 			//.Select.Assemblies()
 			//.Select.Assemblies()

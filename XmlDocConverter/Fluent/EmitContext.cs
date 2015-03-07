@@ -57,13 +57,7 @@ namespace XmlDocConverter.Fluent
 					new RootContext(
 						new DocumentSource(ImmutableList.Create<AssemblyMembers>())));
 		}
-
-		public static EmitContext<DocumentContextType> Create<DocumentContextType>(EmitContext context, DocumentContextType documentContext)
-			where DocumentContextType : DocumentContext
-		{
-			return EmitContext<DocumentContextType>.Create(context, documentContext);
-		}
-
+		
 		// =====================================================================
 		#endregion
 
@@ -195,7 +189,15 @@ namespace XmlDocConverter.Fluent
 			ImmutableDictionary<object, object> localDataMap = null,
 			EmitWriterContext writerContext = null)
 		{
-			return CopyWith(sourceContext, documentContext ?? sourceContext.GetDocumentContext(), persistentDataMap, localDataMap, writerContext);
+			Contract.Requires(sourceContext != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextType>>() != null);
+
+			// Create the new context.
+			return new EmitContext<DocumentContextType>(
+				documentContext ?? sourceContext.GetDocumentContext(),
+				persistentDataMap ?? sourceContext.GetPersistentDataMap(),
+				localDataMap ?? sourceContext.GetLocalDataMap(),
+				writerContext ?? sourceContext.GetWriterContext());
 		}
 
 		/// <summary>
@@ -220,7 +222,7 @@ namespace XmlDocConverter.Fluent
 		{
 			Contract.Requires(sourceContext != null);
 			Contract.Requires(documentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType>>() != null);
 
 			// Create the new context.
 			return new EmitContext<NewDocumentContextType>(
@@ -240,7 +242,7 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// This property allows us to enter a select a new context from the existing context.
 		/// </summary>
-		public Detail.IContextSelector<DocumentContextType> Select
+		public Detail.ContextSelector<DocumentContextType> Select
 		{
 			get
 			{

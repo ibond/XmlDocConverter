@@ -53,11 +53,11 @@
     <Compile Include="Converter\Converter.cs" />
     <Compile Include="Fluent\Control\ContextSelector.cs" />
     <Compile Include="Fluent\DocumentContext\AssemblyContext.cs" />
+    <Compile Include="Fluent\DocumentContext\ClassContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContext.cs" />
     <Compile Include="Fluent\DocumentContext\RootContext.cs" />
     <Compile Include="Emit\XmlDocPathPair.cs" />
     <Compile Include="Emit\Emit.cs" />
-    <Compile Include="Fluent\Control\SelectorExtensions.cs" />
     <Compile Include="Fluent\Control\ControlExtensions.cs" />
     <Compile Include="Fluent\DocumentSource\DocumentSource.cs" />
     <Compile Include="Fluent\DocumentSource\StandardDocumentSources.cs" />

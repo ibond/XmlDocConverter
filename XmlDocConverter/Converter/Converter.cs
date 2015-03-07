@@ -35,7 +35,12 @@ namespace XmlDocConverter
 		private static IEnumerable<string> ForcedModuleReferences = new string[]
 		{
 			// Add in this assembly since it contains all of the types needed by the script.
-			Assembly.GetExecutingAssembly().Location
+			Assembly.GetExecutingAssembly().Location,
+
+			// Add some standard assemblies.
+			"System.dll",
+			"System.Core.dll",
+			"System.Linq.dll"
 		};
 	}
 }
