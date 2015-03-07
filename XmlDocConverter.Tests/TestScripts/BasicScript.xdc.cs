@@ -13,6 +13,9 @@ class Script
 			.InDirectory(@"C:\Work\temp\xdc_test")
 			.From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
 			.Select.Assemblies()
+			//.Select2.Assemblies()
+			//.Select.Assemblies()
+			//.Select.Assemblies()
 			;
 			//.Get.Assemblies.ForEach(emit =>
 			//{

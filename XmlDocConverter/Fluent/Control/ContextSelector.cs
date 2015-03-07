@@ -4,20 +4,31 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
 namespace XmlDocConverter.Fluent.Detail
 {
-	public interface IContextSelector<EmitDocumentContextType, out DocumentContextType>
-		where EmitDocumentContextType : DocumentContext
+	/// <summary>
+	/// An interface to the context selector.  This allows us to be covariant on the document context type.
+	/// </summary>
+	/// <typeparam name="DocumentContextType">The type of the document context.  This may be an interface implemented by a document context as well.</typeparam>
+	public interface IContextSelector<out DocumentContextType>
 	{
-		EmitContext<EmitDocumentContextType> EmitContext { get; }
+		/// <summary>
+		/// Gets the EmitContext for this context selector.
+		/// </summary>
+		EmitContext EmitContext { get; }
+
+		/// <summary>
+		/// Gets the document context for this context selector.
+		/// </summary>
 		DocumentContextType DocumentContext { get; }
 	}
 
 	/// <summary>
 	/// This is a utility class that allows us to use the .Select.Assemblies syntax.
 	/// </summary>
-	public class ContextSelector<DocumentContextType> : IContextSelector<DocumentContextType, DocumentContextType>
+	public class ContextSelector<DocumentContextType> : IContextSelector<DocumentContextType>
 		where DocumentContextType : DocumentContext
 	{
 		/// <summary>
@@ -35,12 +46,12 @@ namespace XmlDocConverter.Fluent.Detail
 		/// <summary>
 		/// Get the emit context.
 		/// </summary>
-		public EmitContext<DocumentContextType> EmitContext { get { return m_emitContext; } }
+		public EmitContext EmitContext { get { return m_emitContext; } }
 
 		/// <summary>
 		/// Get the document context.
 		/// </summary>
-		public DocumentContextType DocumentContext { get { return m_emitContext.DocumentContext; } }
+		public DocumentContextType DocumentContext { get { return m_emitContext.GetDocumentContext(); } }
 
 		/// <summary>
 		/// The emit context.

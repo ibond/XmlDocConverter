@@ -13,8 +13,12 @@ namespace XmlDocConverter.Fluent
 	/// </summary>
 	public static class SelectorExtensions
 	{
-		public static IEnumerable<EmitContext<AssemblyContext>> Assemblies<DocumentContextType>(this IContextSelector<DocumentContextType, IAssemblyContextProvider> selector)
-			where DocumentContextType : DocumentContext
+		/// <summary>
+		/// Select all of the assemblies.
+		/// </summary>
+		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
+		/// <returns>The selected assembly emit contexts.</returns>
+		public static IEnumerable<EmitContext<AssemblyContext>> Assemblies(this IContextSelector<IAssemblyContextProvider> selector)
 		{
 			return selector.DocumentContext.Assemblies.Select(assemblyContext => selector.EmitContext.ReplaceDocumentContext(assemblyContext));
 		}

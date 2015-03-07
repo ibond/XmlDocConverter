@@ -33,7 +33,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				textWriter,
 				() => new EmitTargetContext(
-					context.WriterContext.CreateNew(),
+					context.GetWriterContext().CreateNew(),
 					dataSources =>
 					{
 						// Write all of the sources to the TextWriter.
@@ -59,7 +59,7 @@ namespace XmlDocConverter.Fluent
 
 			// Get the base directory.
 			object baseDirectoryObject;
-			string baseDirectory = context.LocalDataMap.TryGetValue(BaseDirectoryDataMapKey, out baseDirectoryObject)
+			string baseDirectory = context.GetLocalDataMap().TryGetValue(BaseDirectoryDataMapKey, out baseDirectoryObject)
 				? (string)baseDirectoryObject
 				: null;
 
@@ -76,7 +76,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				filePathKey,
 				() => new EmitTargetContext(
-					context.WriterContext.CreateNew(),
+					context.GetWriterContext().CreateNew(),
 					dataSources =>
 					{
 						// Create the directory.
@@ -104,7 +104,7 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(Contract.Result<EmitContext<DocumentContextType>>() != null);
 
 			// Set the base directory.
-			return context.ReplaceLocalDataMap(context.LocalDataMap.SetItem(BaseDirectoryDataMapKey, directoryPath));
+			return context.ReplaceLocalDataMap(context.GetLocalDataMap().SetItem(BaseDirectoryDataMapKey, directoryPath));
 		}
 		
 		/// <summary>
@@ -135,7 +135,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				stringBuilderTarget,
 				() => new EmitTargetContext(
-					context.WriterContext.CreateNew(),
+					context.GetWriterContext().CreateNew(),
 					dataSources =>
 					{
 						// Write all of the sources to the TextWriter.
