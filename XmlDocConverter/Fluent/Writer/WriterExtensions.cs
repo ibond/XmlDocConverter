@@ -18,9 +18,9 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="writer">The formatter to be used for this context.</param>
 		/// <returns>A new emit context with an updated formatter.</returns>
-		public static EmitContext<TDocContext, TParentContext> Using<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, EmitFormatterContext formatter)
-			where TDocContext : DocumentContext
-			where TParentContext : EmitContext
+		public static EmitContext<TDoc, TParent> Using<TDoc, TParent>(this EmitContext<TDoc, TParent> context, EmitFormatterContext formatter)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			return context.ReplaceFormatterContext(formatter);
 		}

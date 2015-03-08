@@ -55,6 +55,7 @@
     <Compile Include="Fluent\DocumentContext\AssemblyContext.cs" />
     <Compile Include="Fluent\DocumentContext\ClassContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DocumentContextCollection.cs" />
     <Compile Include="Fluent\DocumentContext\RootContext.cs" />
     <Compile Include="Emit\XmlDocPathPair.cs" />
     <Compile Include="Emit\Emit.cs" />
@@ -75,11 +76,6 @@
     <Compile Include="Fluent\Writer\Formatter\FormatterExtension.cs" />
     <Compile Include="Fluent\Writer\Output\OutputSource.cs" />
     <Compile Include="Fluent\Writer\Formatter\WriteHeader.cs" />
-    <Compile Include="Item\DocSourceItem.cs" />
-    <Compile Include="Item\EnumItem.cs" />
-    <Compile Include="Item\ClassItem.cs" />
-    <Compile Include="Item\AssemblyItem.cs" />
-    <Compile Include="Item\EmitItem.cs" />
     <Compile Include="Fluent\EmitItemGroup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

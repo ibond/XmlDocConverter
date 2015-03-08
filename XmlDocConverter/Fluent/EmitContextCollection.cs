@@ -10,16 +10,16 @@
 //	/// <summary>
 //	/// This represents a collection of emit contexts.
 //	/// </summary>
-//	/// <typeparam name="TDocContext">The type of the document contexts contained in this collection.</typeparam>
-//	public class EmitContextCollection<TDocContext, SourceDocumentContextType>
-//		where TDocContext : DocumentContext
+//	/// <typeparam name="TDoc">The type of the document contexts contained in this collection.</typeparam>
+//	public class EmitContextCollection<TDoc, SourceDocumentContextType>
+//		where TDoc : DocumentContext
 //		where SourceDocumentContextType : DocumentContext
 //	{
 //		/// <summary>
 //		/// Construct an EmitContextCollection.
 //		/// </summary>
 //		/// <param name="contexts">The contexts contained within this collection.</param>
-//		public EmitContextCollection(IEnumerable<EmitContext<TDocContext>> contexts, EmitContext<SourceDocumentContextType> sourceContext)
+//		public EmitContextCollection(IEnumerable<EmitContext<TDoc>> contexts, EmitContext<SourceDocumentContextType> sourceContext)
 //		{
 //			Contract.Requires(contexts != null);
 //			Contract.Requires(sourceContext != null);
@@ -33,7 +33,7 @@
 //		/// <summary>
 //		/// Gets the emit contexts.
 //		/// </summary>
-//		public IEnumerable<EmitContext<TDocContext>> Contexts { get { return m_contexts; } }
+//		public IEnumerable<EmitContext<TDoc>> Contexts { get { return m_contexts; } }
 
 //		/// <summary>
 //		/// Gets the emit contexts.
@@ -48,6 +48,6 @@
 //		/// <summary>
 //		/// The contexts contained within this group.
 //		/// </summary>
-//		private readonly IEnumerable<EmitContext<TDocContext>> m_contexts;
+//		private readonly IEnumerable<EmitContext<TDoc>> m_contexts;
 //	}
 //}

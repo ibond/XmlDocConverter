@@ -40,9 +40,16 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		public Type Class { get { return m_classType; } }
 
+		/// <summary>
+		/// The default writer for a class.
+		/// </summary>
 		public override EmitWriter<ClassContext>.Writer DefaultWriter
 		{
-			get { return context => context; }
+			get
+			{
+				return (context, doc) => context;
+					//context.WriteHeader(doc.Name);
+			}
 		}
 
 		/// <summary>

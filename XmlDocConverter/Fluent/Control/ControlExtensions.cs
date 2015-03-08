@@ -19,13 +19,13 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current emit context.</param>
 		/// <param name="scopeAction">The action containing the scoped emit operations.</param>
 		/// <returns>The EmitContext as it was before Scope was called.</returns>
-		public static EmitContext<TDocContext, TParentContext> Scope<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, Action<EmitContext<TDocContext, TParentContext>> scopeAction)
-			where TDocContext : DocumentContext
-			where TParentContext : EmitContext
+		public static EmitContext<TDoc, TParent> Scope<TDoc, TParent>(this EmitContext<TDoc, TParent> context, Action<EmitContext<TDoc, TParent>> scopeAction)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(scopeAction != null);
-			Contract.Requires(Contract.Result<EmitContext<TDocContext, TParentContext>>() == context);
+			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() == context);
 
 			// Call the scope action with this context.
 			scopeAction(context);
@@ -41,12 +41,12 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="context">The current emit context.</param>
 		/// <returns>The parent emit context.</returns>
-		public static TParentContext Break<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context)
-			where TDocContext : DocumentContext
-			where TParentContext : EmitContext
+		public static TParent Break<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
-			Contract.Requires(Contract.Result<EmitContext<TDocContext, TParentContext>>() == context);
+			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() == context);
 			
 			return context.GetParentContext();
 		}
@@ -57,16 +57,16 @@ namespace XmlDocConverter.Fluent
 		/// <param name="source">The current emit context.</param>
 		/// <param name="action">The action containing the emit operation to run on each emit context.</param>
 		/// <returns>The parent of the emit context.</returns>
-		public static TParentContext
-			ForEach<TDocContext, TParentContext>(
-				this EmitContext<DocumentContextCollection<TDocContext>, TParentContext> source,
-				Action<EmitContext<TDocContext, EmitContext<DocumentContextCollection<TDocContext>, TParentContext>>> action)
-			where TDocContext : DocumentContext
-			where TParentContext : EmitContext
+		public static TParent
+			ForEach<TDoc, TParent>(
+				this EmitContext<DocumentContextCollection<TDoc>, TParent> source,
+				Action<EmitContext<TDoc, EmitContext<DocumentContextCollection<TDoc>, TParent>>> action)
+			where TDoc : DocumentContext<TDoc>
+			where TParent : EmitContext
 		{
 			Contract.Requires(source != null);
 			Contract.Requires(action != null);
-			Contract.Requires(Contract.Result<TParentContext>() == source.GetParentContext());
+			Contract.Requires(Contract.Result<TParent>() == source.GetParentContext());
 						
 			// Run the action for each element.
 			foreach (var element in source.GetDocumentContext().Elements)

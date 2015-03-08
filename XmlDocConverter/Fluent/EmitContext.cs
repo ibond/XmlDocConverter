@@ -64,9 +64,9 @@ namespace XmlDocConverter.Fluent
 		/// Create a new root emit context based on an existing context.
 		/// </summary>
 		/// <returns>A new emit context with default values.</returns>
-		public static EmitContextRoot<TDocContext> CreateRoot<TDocContext, TParentContext>(EmitContext<TDocContext, TParentContext> emitContext)
-			where TDocContext : DocumentContext
-			where TParentContext : EmitContext
+		public static EmitContextRoot<TDoc> CreateRoot<TDoc, TParent>(EmitContext<TDoc, TParent> emitContext)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			return CreateRoot(
 				emitContext.GetDocumentContext(),
@@ -79,14 +79,14 @@ namespace XmlDocConverter.Fluent
 		/// Create a new root emit context.
 		/// </summary>
 		/// <returns>A new emit context with the specified values.</returns>
-		public static EmitContextRoot<TDocContext> CreateRoot<TDocContext>(
-			TDocContext documentContext, 
+		public static EmitContextRoot<TDoc> CreateRoot<TDoc>(
+			TDoc documentContext, 
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
 			EmitWriterContext writerContext)
-			where TDocContext : DocumentContext
+			where TDoc : DocumentContext
 		{
-			return new EmitContextRoot<TDocContext>(documentContext, persistentDataMap, localDataMap, writerContext);
+			return new EmitContextRoot<TDoc>(documentContext, persistentDataMap, localDataMap, writerContext);
 		}
 		
 		// =====================================================================
@@ -167,9 +167,9 @@ namespace XmlDocConverter.Fluent
 	/// This type contains the necessary context for deciding what, where, and how to emit.  For the most part it is
 	/// readonly and copied whenever something needs to change.
 	/// </summary>
-	public class EmitContext<TDocContext, TParentContext> : EmitContext
-		where TDocContext : DocumentContext
-		where TParentContext : EmitContext
+	public class EmitContext<TDoc, TParent> : EmitContext
+		where TDoc : DocumentContext
+		where TParent : EmitContext
 	{
 		#region Constructors and Conversions
 		// =====================================================================
@@ -186,8 +186,8 @@ namespace XmlDocConverter.Fluent
 		/// <param name="localDataMap">The local data map.</param>
 		/// <param name="writerContext">The writer context.</param>
 		protected EmitContext(
-			TDocContext documentContext,
-			Func<EmitContext<TDocContext, TParentContext>, TParentContext> getParentContext,
+			TDoc documentContext,
+			Func<EmitContext<TDoc, TParent>, TParent> getParentContext,
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
 			EmitWriterContext writerContext)
@@ -204,14 +204,14 @@ namespace XmlDocConverter.Fluent
 		}
 
 		/// <summary>
-		/// Convert this to a more general EmitContext&lt;TDocContext&gt; where the parent context is upcasted to
+		/// Convert this to a more general EmitContext&lt;TDoc&gt; where the parent context is upcasted to
 		/// EmitContext.
 		/// </summary>
 		/// <param name="context">The context to convert.</param>
 		/// <returns>A copy of the emit context with the type modified.</returns>
-		public static implicit operator EmitContext<TDocContext>(EmitContext<TDocContext, TParentContext> context)
+		public static implicit operator EmitContext<TDoc>(EmitContext<TDoc, TParent> context)
 		{
-			return new EmitContext<TDocContext>(
+			return new EmitContext<TDoc>(
 				context.m_documentContext,
 				context.m_parentContext,
 				context.m_persistentDataMap,
@@ -238,19 +238,19 @@ namespace XmlDocConverter.Fluent
 		/// <param name="localDataMap">The new value for the local data map.  If null this will copy from the source context instead.</param>
 		/// <param name="writerContext">The new value for the writer context.  If null this will copy from the source context instead.</param>
 		/// <returns>A new emit context with replaced values.</returns>
-		public static EmitContext<TDocContext, TParentContext> CopyWith(
-			EmitContext<TDocContext, TParentContext> sourceContext,
-			TParentContext parentContext = null,
-			TDocContext documentContext = null,
+		public static EmitContext<TDoc, TParent> CopyWith(
+			EmitContext<TDoc, TParent> sourceContext,
+			TParent parentContext = null,
+			TDoc documentContext = null,
 			ConcurrentDictionary<object, object> persistentDataMap = null,
 			ImmutableDictionary<object, object> localDataMap = null,
 			EmitWriterContext writerContext = null)
 		{
 			Contract.Requires(sourceContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<TDocContext, TParentContext>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<TDoc, TParent>>() != null);
 
 			// Create the new context.
-			return new EmitContext<TDocContext, TParentContext>(
+			return new EmitContext<TDoc, TParent>(
 				documentContext ?? sourceContext.m_documentContext,
 				self => parentContext ?? sourceContext.m_parentContext,
 				persistentDataMap ?? sourceContext.GetPersistentDataMap(),
@@ -270,10 +270,10 @@ namespace XmlDocConverter.Fluent
 		/// <param name="localDataMap">The new value for the local data map.  If null this will copy from the source context instead.</param>
 		/// <param name="writerContext">The new value for the writer context.  If null this will copy from the source context instead.</param>
 		/// <returns>A new emit context with replaced values.</returns>
-		public static EmitContext<NewDocumentContextType, TParentContext> CopyWith<NewDocumentContextType>(
+		public static EmitContext<NewDocumentContextType, TParent> CopyWith<NewDocumentContextType>(
 			EmitContext sourceContext,
 			NewDocumentContextType documentContext,
-			TParentContext parentContext,
+			TParent parentContext,
 			ConcurrentDictionary<object, object> persistentDataMap = null,
 			ImmutableDictionary<object, object> localDataMap = null,
 			EmitWriterContext writerContext = null)
@@ -282,10 +282,10 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(sourceContext != null);
 			Contract.Requires(documentContext != null);
 			Contract.Requires(parentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, TParentContext>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, TParent>>() != null);
 
 			// Create the new context.
-			return new EmitContext<NewDocumentContextType, TParentContext>(
+			return new EmitContext<NewDocumentContextType, TParent>(
 				documentContext,
 				self => parentContext,
 				persistentDataMap ?? sourceContext.GetPersistentDataMap(),
@@ -303,11 +303,11 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// This property allows us to enter a select context from the existing context.
 		/// </summary>
-		public Detail.ContextSelector<TDocContext, TParentContext> Select
+		public Detail.ContextSelector<TDoc, TParent> Select
 		{
 			get
 			{
-				return new Detail.ContextSelector<TDocContext, TParentContext>(this);
+				return new Detail.ContextSelector<TDoc, TParent>(this);
 			}
 		}
 
@@ -326,7 +326,7 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="context">The context from which we should get the document context.</param>
 		/// <returns>The document context of this context.</returns>
-		public static TDocContext GetDocumentContext(EmitContext<TDocContext, TParentContext> context)
+		public static TDoc GetDocumentContext(EmitContext<TDoc, TParent> context)
 		{
 			return context.m_documentContext;
 		}
@@ -339,7 +339,7 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="context">The context from which we should get the parent context.</param>
 		/// <returns>The parent of this context.</returns>
-		public static TParentContext GetParentContext(EmitContext<TDocContext, TParentContext> context)
+		public static TParent GetParentContext(EmitContext<TDoc, TParent> context)
 		{
 			return context.m_parentContext;
 		}
@@ -354,14 +354,14 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The current context within the document.
 		/// </summary>
-		private readonly TDocContext m_documentContext;
+		private readonly TDoc m_documentContext;
 
 		/// <summary>
 		/// The parent emit context.
 		/// 
 		/// Use the ParentContext property to access the parent context as this may be overridden in a derived class.
 		/// </summary>
-		private readonly TParentContext m_parentContext;
+		private readonly TParent m_parentContext;
 
 		// =====================================================================
 		#endregion
@@ -371,9 +371,9 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// This is a function to make it easier to deal with types where the parent context type doesn't matter.
 	/// </summary>
-	/// <typeparam name="TDocContext">The type of the document context.</typeparam>
-	public class EmitContext<TDocContext> : EmitContext<TDocContext, EmitContext>
-		where TDocContext : DocumentContext
+	/// <typeparam name="TDoc">The type of the document context.</typeparam>
+	public class EmitContext<TDoc> : EmitContext<TDoc, EmitContext>
+		where TDoc : DocumentContext
 	{
 		#region Constructors
 		// =====================================================================
@@ -382,7 +382,7 @@ namespace XmlDocConverter.Fluent
 		/// Construct a copy of the EmitContext.
 		/// </summary>
 		internal EmitContext(
-			TDocContext documentContext,
+			TDoc documentContext,
 			EmitContext parentContext,
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
@@ -400,18 +400,18 @@ namespace XmlDocConverter.Fluent
 	/// This is a special type of the EmitContext for representing the top level of an emit context chain.  It's
 	/// effectively a normal emit context except the parent points back to itself.
 	/// </summary>
-	/// <typeparam name="TDocContext">The document context type.</typeparam>
-	public class EmitContextRoot<TDocContext> : EmitContext<TDocContext, EmitContextRoot<TDocContext>>
-		where TDocContext : DocumentContext
+	/// <typeparam name="TDoc">The document context type.</typeparam>
+	public class EmitContextRoot<TDoc> : EmitContext<TDoc, EmitContextRoot<TDoc>>
+		where TDoc : DocumentContext
 	{
 		internal EmitContextRoot(
-			TDocContext documentContext,
+			TDoc documentContext,
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
 			EmitWriterContext writerContext)
 			: base(
 				documentContext,
-				self => (EmitContextRoot<TDocContext>)self,
+				self => (EmitContextRoot<TDoc>)self,
 				persistentDataMap,
 				localDataMap,
 				writerContext)
