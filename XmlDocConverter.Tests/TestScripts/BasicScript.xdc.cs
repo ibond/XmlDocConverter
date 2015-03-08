@@ -7,18 +7,28 @@ class Script
 {
 	static void Run()
 	{
+		var y =
+		Emit.BeginClean
+			.Break()
+			.Break()
+			.Break()
+			;
+
 		var x =
 		Emit.Begin
 			.Using(MarkdownEmitWriter.GitHub)
 			.InDirectory(@"C:\Work\temp\xdc_test")
 			.From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
+			.ToFile("ProcessArgumentTools.md")
 			.Write()
-			.UsingRootContextWriter(context =>
+			.Using(new EmitWriter<RootContext>(context => context))
+			.Using((EmitContext<RootContext> context) =>
 				{
 					return context;
 				})
+			.WriteHeader("asdf")
 			.Write()
-			.Select.Assemblies().UsingRootContextWriter(null)
+			//.Select.Assemblies().UsingX(null)
 			.Break()
 			.Write()
 			.Select.Assemblies().ForEach(emit =>

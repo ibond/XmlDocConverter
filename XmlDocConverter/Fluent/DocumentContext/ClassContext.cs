@@ -40,7 +40,7 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		public Type Class { get { return m_classType; } }
 
-		public override Func<EmitContext<ClassContext>, EmitContext> DefaultWriter
+		public override EmitWriter<ClassContext>.Writer DefaultWriter
 		{
 			get { return context => context; }
 		}

@@ -20,22 +20,22 @@ namespace XmlDocConverter
 		/// <summary>
 		/// This begins the emit process using the initial emit context specified by the script context.
 		/// </summary>
-		public static EmitContext<RootContext, EmitContext> Begin
+		public static EmitContextRoot<RootContext> Begin
 		{
 			get
 			{
-				return Script.CurrentRunContext.InitialEmitContext.ClonePersistentData();
+				return EmitContext.CreateRoot(Script.CurrentRunContext.InitialEmitContext.ClonePersistentData());
 			}
 		}
 
 		/// <summary>
 		/// This begins the emit process using a clean emit context.
 		/// </summary>
-		public static EmitContext<RootContext, EmitContext> BeginClean
+		public static EmitContextRoot<RootContext> BeginClean
 		{
 			get
 			{
-				return EmitContext.Create();
+				return EmitContext.CreateRoot();
 			}
 		}
 	}

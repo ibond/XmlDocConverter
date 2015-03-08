@@ -15,7 +15,7 @@ namespace XmlDocConverter.Fluent
 	public abstract class DocumentContext<FinalContextType> : DocumentContext
 		where FinalContextType : DocumentContext<FinalContextType>
 	{
-		public abstract Func<EmitContext<FinalContextType>, EmitContext> DefaultWriter { get; }
+		public abstract EmitWriter<FinalContextType>.Writer DefaultWriter { get; }
 	}
 
 	public abstract class ScalarDocumentContext<FinalContextType> : DocumentContext<FinalContextType>
@@ -57,7 +57,7 @@ namespace XmlDocConverter.Fluent
 			m_elements = elements;
 		}
 
-		public override Func<EmitContext<DocumentContextCollection<TDocContext>>, EmitContext> DefaultWriter
+		public override EmitWriter<DocumentContextCollection<TDocContext>>.Writer DefaultWriter
 		{
 			get 
 			{
@@ -65,7 +65,7 @@ namespace XmlDocConverter.Fluent
 					{
 						foreach (var element in m_elements)
 						{
-							//context.Write();
+							context.Write();
 						}
 
 						return context;
@@ -77,21 +77,30 @@ namespace XmlDocConverter.Fluent
 
 		private readonly IEnumerable<TDocContext> m_elements;
 	}
+	
+
+	public class EmitWriter<TDocContext>
+		where TDocContext : DocumentContext<TDocContext>
+	{
+		public EmitWriter(Writer writer)
+		{
+			WriterFunction = writer;
+		}
+
+		public readonly Writer WriterFunction;
+
+
+		public delegate EmitContext Writer(EmitContext<TDocContext> context);
+
+		public static readonly object DataKey = new object();
+	}
 
 	
 	/// <summary>
 	/// This provides the extensions for writing RootContext objects.
 	/// </summary>
-	public static partial class DocumentContextWriterExtensions
+	public static class DocumentContextWriterExtensions
 	{
-		public class DocumentContextWriteExtensionImpl<TDocContext>
-			where TDocContext : DocumentContext
-		{
-			public delegate EmitContext WriteDelegate(EmitContext<TDocContext> context);
-			
-			public static readonly object DataKey = new object();
-		}
-
 		public static EmitContext<TDocContext, TParentContext>
 			Write<TDocContext, TParentContext>(
 				this EmitContext<TDocContext, TParentContext> context)
@@ -99,21 +108,20 @@ namespace XmlDocConverter.Fluent
 			where TParentContext : EmitContext
 		{
 			var writer = context.GetLocalData(
-				DocumentContextWriteExtensionImpl<TDocContext>.DataKey, 
+				EmitWriter<TDocContext>.DataKey, 
 				context.GetDocumentContext().DefaultWriter);
 
 			return writer(context)
-				.ReplaceDocumentContext(context.GetDocumentContext())
-				.ReplaceParentContext(context.GetParentContext());
+				.ReplaceDocumentAndParentContext(context.GetDocumentContext(), context.GetParentContext());
 		}
 
 		public static EmitContext<TDocContext, TParentContext>
 			Using<TDocContext, TParentContext, ReplaceDocumentContextType>(
 				this EmitContext<TDocContext, TParentContext> context,
-				DocumentContextWriteExtensionImpl<ReplaceDocumentContextType>.WriteDelegate writer)
+				EmitWriter<ReplaceDocumentContextType>.Writer writer)
 			where TDocContext : DocumentContext<TDocContext>
 			where TParentContext : EmitContext
-			where ReplaceDocumentContextType : DocumentContext<TDocContext>
+			where ReplaceDocumentContextType : DocumentContext<ReplaceDocumentContextType>
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(writer != null);
@@ -121,8 +129,19 @@ namespace XmlDocConverter.Fluent
 			// If writer is null we remove the value from the map.  This will cause us to return to using the default
 			// writer whenever the Write function is called.
 			return writer != null
-				? context.UpdateLocalDataMap(map => map.SetItem(DocumentContextWriteExtensionImpl<ReplaceDocumentContextType>.DataKey, writer))
-				: context.UpdateLocalDataMap(map => map.Remove(DocumentContextWriteExtensionImpl<ReplaceDocumentContextType>.DataKey));
+				? context.UpdateLocalDataMap(map => map.SetItem(EmitWriter<ReplaceDocumentContextType>.DataKey, writer))
+				: context.UpdateLocalDataMap(map => map.Remove(EmitWriter<ReplaceDocumentContextType>.DataKey));
+		}
+
+		public static EmitContext<TDocContext, TParentContext>
+			Using<TDocContext, TParentContext, ReplaceDocumentContextType>(
+				this EmitContext<TDocContext, TParentContext> context,
+				EmitWriter<ReplaceDocumentContextType> writer)
+			where TDocContext : DocumentContext<TDocContext>
+			where TParentContext : EmitContext
+			where ReplaceDocumentContextType : DocumentContext<ReplaceDocumentContextType>
+		{
+			return context.Using(writer.WriterFunction);
 		}
 	}
 }

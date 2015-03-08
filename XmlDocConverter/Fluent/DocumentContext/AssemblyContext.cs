@@ -39,7 +39,7 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		public Assembly Assembly { get { return m_assembly; } }
 
-		public override Func<EmitContext<AssemblyContext>, EmitContext> DefaultWriter
+		public override EmitWriter<AssemblyContext>.Writer DefaultWriter
 		{
 			get { return context => context; }
 		}
