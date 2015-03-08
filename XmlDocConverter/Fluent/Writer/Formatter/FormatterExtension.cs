@@ -25,14 +25,14 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// Write the given value to the emit context.
 		/// </summary>
-		/// <typeparam name="DocumentContextType">The document context type of the emit context.</typeparam>
-		/// <typeparam name="ParentEmitContextType">The parent context type of the emit context.</typeparam>
+		/// <typeparam name="TDocContext">The document context type of the emit context.</typeparam>
+		/// <typeparam name="TParentContext">The parent context type of the emit context.</typeparam>
 		/// <param name="context">The emit context where the value should be written.</param>
 		/// <param name="value">The value to be written.</param>
 		/// <returns>An updated emit context.</returns>
-		public EmitContext<DocumentContextType, ParentEmitContextType> Write<DocumentContextType, ParentEmitContextType>(EmitContext<DocumentContextType, ParentEmitContextType> context, string value)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public EmitContext<TDocContext, TParentContext> Write<TDocContext, TParentContext>(EmitContext<TDocContext, TParentContext> context, string value)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return context.ReplaceWriterContext(Write(context.GetWriterContext(), value));
 		}

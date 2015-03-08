@@ -22,9 +22,9 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current emit context.</param>
 		/// <param name="assemblyPath">The path to the assembly whose documentation should be converted.</param>
 		/// <returns>A new context with the updated assembly.</returns>
-		public static EmitContext<RootContext, ParentEmitContextType> From<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string assemblyPath)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<RootContext, TParentContext> From<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, string assemblyPath)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return context.From(new XmlDocPathPair[] { new XmlDocPathPair(assemblyPath, null) });
 		}
@@ -36,9 +36,9 @@ namespace XmlDocConverter.Fluent
 		/// <param name="assemblyPath">The path to the assembly whose documentation should be converted.</param>
 		/// <param name="xmlDocPath">The path to the XML document for the assembly.</param>
 		/// <returns>A new context with the updated assembly.</returns>
-		public static EmitContext<RootContext, ParentEmitContextType> From<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string assemblyPath, string xmlDocPath)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<RootContext, TParentContext> From<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, string assemblyPath, string xmlDocPath)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return context.From(new XmlDocPathPair[] { new XmlDocPathPair(assemblyPath, xmlDocPath) });
 		}
@@ -49,9 +49,9 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current emit context.</param>
 		/// <param name="assemblyPaths">The path to the assemblies whose documentation should be converted.</param>
 		/// <returns>A new context with the updated assemblies.</returns>
-		public static EmitContext<RootContext, ParentEmitContextType> From<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, IEnumerable<string> assemblyPaths)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<RootContext, TParentContext> From<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, IEnumerable<string> assemblyPaths)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return context.From(assemblyPaths.Select(assemblyPath => new XmlDocPathPair(assemblyPath)));
 		}
@@ -62,9 +62,9 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current emit context.</param>
 		/// <param name="pathPairs">The pairs of document paths for each assembly and it's corresponding XML documentation.</param>
 		/// <returns>A new context with the updated assemblies.</returns>
-		public static EmitContext<RootContext, ParentEmitContextType> From<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, IEnumerable<XmlDocPathPair> pathPairs)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<RootContext, TParentContext> From<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, IEnumerable<XmlDocPathPair> pathPairs)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(pathPairs != null);
 			Contract.Requires(Contract.ForAll(pathPairs, p => p != null));

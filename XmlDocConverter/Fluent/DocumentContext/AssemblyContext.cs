@@ -123,14 +123,14 @@ namespace XmlDocConverter.Fluent
 	///// </summary>
 	//public static class AssemblyContextWriterExtensions
 	//{
-	//	public static ParentEmitContextType Write<ParentEmitContextType>(this EmitContext<DocumentContextCollection<RootContext>, ParentEmitContextType> context)
-	//		where ParentEmitContextType : EmitContext
+	//	public static TParentContext Write<TParentContext>(this EmitContext<DocumentContextCollection<RootContext>, TParentContext> context)
+	//		where TParentContext : EmitContext
 	//	{
 	//		return context.ForEach(emit => emit.Write());
 	//	}
 
-	//	public static EmitContext<RootContext, ParentEmitContextType> Write<ParentEmitContextType>(this EmitContext<RootContext, ParentEmitContextType> context)
-	//		where ParentEmitContextType : EmitContext
+	//	public static EmitContext<RootContext, TParentContext> Write<TParentContext>(this EmitContext<RootContext, TParentContext> context)
+	//		where TParentContext : EmitContext
 	//	{
 	//		return context;
 	//		//return context
@@ -143,13 +143,13 @@ namespace XmlDocConverter.Fluent
 	//	/// </summary>
 	//	/// <param name="directoryPath">The path to the base directory.</param>
 	//	/// <returns>A new context with the updated base directory.</returns>
-	//	public static EmitContext<DocumentContextType, ParentEmitContextType> InDirectory<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, string directoryPath)
-	//		where DocumentContextType : DocumentContext
-	//		where ParentEmitContextType : EmitContext
+	//	public static EmitContext<TDocContext, TParentContext> InDirectory<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, string directoryPath)
+	//		where TDocContext : DocumentContext
+	//		where TParentContext : EmitContext
 	//	{
 	//		Contract.Requires(context != null);
 	//		Contract.Requires(!String.IsNullOrWhiteSpace(directoryPath));
-	//		Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
+	//		Contract.Requires(Contract.Result<EmitContext<TDocContext, TParentContext>>() != null);
 
 	//		// Set the base directory.
 	//		return context.ReplaceLocalDataMap(context.GetLocalDataMap().SetItem(BaseDirectoryDataMapKey, directoryPath));

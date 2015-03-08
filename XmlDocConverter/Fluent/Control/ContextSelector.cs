@@ -11,34 +11,34 @@ namespace XmlDocConverter.Fluent.Detail
 	/// <summary>
 	/// An interface to the context selector.  This allows us to be covariant on the document context type.
 	/// </summary>
-	/// <typeparam name="DocumentContextType">The type of the document context.  This may be an interface implemented by a document context as well.</typeparam>
-	public interface IContextSelector<EmitDocumentContextType, ParentEmitContextType, out DocumentContextType>
+	/// <typeparam name="TDocContext">The type of the document context.  This may be an interface implemented by a document context as well.</typeparam>
+	public interface IContextSelector<EmitDocumentContextType, TParentContext, out TDocContext>
 		where EmitDocumentContextType : DocumentContext
-		where ParentEmitContextType : EmitContext
+		where TParentContext : EmitContext
 	{
 		/// <summary>
 		/// Gets the EmitContext for this context selector.
 		/// </summary>
-		EmitContext<EmitDocumentContextType, ParentEmitContextType> EmitContext { get; }
+		EmitContext<EmitDocumentContextType, TParentContext> EmitContext { get; }
 
 		/// <summary>
 		/// Gets the document context for this context selector.
 		/// </summary>
-		DocumentContextType DocumentContext { get; }
+		TDocContext DocumentContext { get; }
 	}
 
 	/// <summary>
 	/// This is a utility class that allows us to use the .Select.Assemblies syntax.
 	/// </summary>
-	public class ContextSelector<DocumentContextType, ParentEmitContextType> : IContextSelector<DocumentContextType, ParentEmitContextType, DocumentContextType>
-		where DocumentContextType : DocumentContext
-		where ParentEmitContextType : EmitContext
+	public class ContextSelector<TDocContext, TParentContext> : IContextSelector<TDocContext, TParentContext, TDocContext>
+		where TDocContext : DocumentContext
+		where TParentContext : EmitContext
 	{
 		/// <summary>
 		/// Construct a context selector.
 		/// </summary>
 		/// <param name="emitContext">The emit context.</param>
-		public ContextSelector(EmitContext<DocumentContextType, ParentEmitContextType> emitContext)
+		public ContextSelector(EmitContext<TDocContext, TParentContext> emitContext)
 		{
 			Contract.Requires(emitContext != null);
 			Contract.Ensures(m_emitContext != null);
@@ -49,16 +49,16 @@ namespace XmlDocConverter.Fluent.Detail
 		/// <summary>
 		/// Get the emit context.
 		/// </summary>
-		public EmitContext<DocumentContextType, ParentEmitContextType> EmitContext { get { return m_emitContext; } }
+		public EmitContext<TDocContext, TParentContext> EmitContext { get { return m_emitContext; } }
 
 		/// <summary>
 		/// Get the document context.
 		/// </summary>
-		public DocumentContextType DocumentContext { get { return m_emitContext.GetDocumentContext(); } }
+		public TDocContext DocumentContext { get { return m_emitContext.GetDocumentContext(); } }
 
 		/// <summary>
 		/// The emit context.
 		/// </summary>
-		private readonly EmitContext<DocumentContextType, ParentEmitContextType> m_emitContext;
+		private readonly EmitContext<TDocContext, TParentContext> m_emitContext;
 	}
 }

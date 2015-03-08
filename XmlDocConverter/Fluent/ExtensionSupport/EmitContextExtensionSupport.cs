@@ -39,16 +39,16 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="updateFunction">The function used to update the data map.  This takes the existing data map and returns a new data map.</param>
 		/// <returns>A new emit context with an updated local data map.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType>
-			UpdateLocalDataMap<DocumentContextType, ParentEmitContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		public static EmitContext<TDocContext, TParentContext>
+			UpdateLocalDataMap<TDocContext, TParentContext>(
+				this EmitContext<TDocContext, TParentContext> context,
 				Func<ImmutableDictionary<object, object>, ImmutableDictionary<object, object>> updateFunction)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(updateFunction != null);
-			Contract.Ensures(Contract.Result<DocumentContextType>() != null);
+			Contract.Ensures(Contract.Result<TDocContext>() != null);
 
 			return context.ReplaceLocalDataMap(updateFunction(context.GetLocalDataMap()));
 		}
@@ -58,19 +58,19 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="localDataMap">The new local data map.</param>
 		/// <returns>A new emit context with an updated local data map.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> 
-			ReplaceLocalDataMap<DocumentContextType, ParentEmitContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context, 
+		public static EmitContext<TDocContext, TParentContext> 
+			ReplaceLocalDataMap<TDocContext, TParentContext>(
+				this EmitContext<TDocContext, TParentContext> context, 
 				ImmutableDictionary<object, object> localDataMap)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(localDataMap != null);
-			Contract.Ensures(Contract.Result<DocumentContextType>() != null);
+			Contract.Ensures(Contract.Result<TDocContext>() != null);
 
 			return context.GetLocalDataMap() != localDataMap
-				? EmitContext<DocumentContextType, ParentEmitContextType>.CopyWith(context, localDataMap: localDataMap)
+				? EmitContext<TDocContext, TParentContext>.CopyWith(context, localDataMap: localDataMap)
 				: context;
 		}
 
@@ -127,10 +127,10 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="context">The context from which we should get the document context.</param>
 		/// <returns>The document context of this context.</returns>
-		public static DocumentContextType GetDocumentContext<DocumentContextType>(this EmitContext<DocumentContextType> context)
-			where DocumentContextType : DocumentContext
+		public static TDocContext GetDocumentContext<TDocContext>(this EmitContext<TDocContext> context)
+			where TDocContext : DocumentContext
 		{
-			return EmitContext<DocumentContextType>.GetDocumentContext(context);
+			return EmitContext<TDocContext>.GetDocumentContext(context);
 		}
 
 		/// <summary>
@@ -138,11 +138,11 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="context">The context from which we should get the parent context.</param>
 		/// <returns>The parent of this context.</returns>
-		public static ParentEmitContextType GetParentContext<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static TParentContext GetParentContext<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
-			return EmitContext<DocumentContextType, ParentEmitContextType>.GetParentContext(context);
+			return EmitContext<TDocContext, TParentContext>.GetParentContext(context);
 		}
 
 
@@ -150,16 +150,16 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// Clone the emit context with a copy of the persistent data.
 		/// </summary>
 		/// <returns>A new emit context with a separate set of persistent data.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> ClonePersistentData<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext> ClonePersistentData<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<TDocContext, TParentContext>>() != null);
 
 			// Use ToArray instead of the IEnumerable interface to make sure we get a consistent snapshot.
 			var newPersistentDataMap = new ConcurrentDictionary<object, object>(context.GetPersistentDataMap().ToArray());
-			return EmitContext<DocumentContextType, ParentEmitContextType>.CopyWith(context, persistentDataMap: newPersistentDataMap);
+			return EmitContext<TDocContext, TParentContext>.CopyWith(context, persistentDataMap: newPersistentDataMap);
 		}
 
 		/// <summary>
@@ -167,13 +167,13 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="targetContext">The new target context.</param>
 		/// <returns>A new emit context with the target context changed.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> ReplaceTargetContext<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, EmitTargetContext targetContext)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext> ReplaceTargetContext<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, EmitTargetContext targetContext)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(targetContext != null);
-			Contract.Ensures(Contract.Result<DocumentContextType>() != null);
+			Contract.Ensures(Contract.Result<TDocContext>() != null);
 
 			// Register the target context.
 			Script.CurrentRunContext.RegisterEmitTarget(targetContext);
@@ -190,9 +190,9 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// <param name="key">The key for this target.</param>
 		/// <param name="createFunction">The EmitTargetContext factory function.</param>
 		/// <returns>A new emit context with the target context changed.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> ReplaceTargetContext<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, object key, Func<EmitTargetContext> createFactory)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext> ReplaceTargetContext<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, object key, Func<EmitTargetContext> createFactory)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return ReplaceTargetContext(context, (EmitTargetContext)context.GetPersistentDataMap().GetOrAdd(key, k => createFactory()));
 		}
@@ -202,16 +202,16 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="writerContext">The new writer context.</param>
 		/// <returns>A new emit context with the writer context set to the given writer context.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> ReplaceWriterContext<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, EmitWriterContext writerContext)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext> ReplaceWriterContext<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, EmitWriterContext writerContext)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(writerContext != null);
-			Contract.Ensures(Contract.Result<DocumentContextType>() != null);
+			Contract.Ensures(Contract.Result<TDocContext>() != null);
 
 			return context.GetWriterContext() != writerContext
-				? EmitContext<DocumentContextType, ParentEmitContextType>.CopyWith(context, writerContext: writerContext)
+				? EmitContext<TDocContext, TParentContext>.CopyWith(context, writerContext: writerContext)
 				: context;
 		}
 
@@ -220,9 +220,9 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="formatter">The formatter to be used for this context.</param>
 		/// <returns>A new emit context with an updated formatter.</returns>
-		public static EmitContext<DocumentContextType, ParentEmitContextType> ReplaceFormatterContext<DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, EmitFormatterContext formatter)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext> ReplaceFormatterContext<TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, EmitFormatterContext formatter)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return context.GetWriterContext().FormatterContext != formatter
 				? ReplaceWriterContext(context, context.GetWriterContext().ReplaceFormatterContext(formatter))
@@ -234,17 +234,17 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="documentContext">The new document context to be used for this context.</param>
 		/// <returns>A new emit context with an updated document context.</returns>
-		public static EmitContext<NewDocumentContextType, ParentEmitContextType>
-			ReplaceDocumentContext<NewDocumentContextType, DocumentContextType, ParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, NewDocumentContextType documentContext)
+		public static EmitContext<NewDocumentContextType, TParentContext>
+			ReplaceDocumentContext<NewDocumentContextType, TDocContext, TParentContext>(this EmitContext<TDocContext, TParentContext> context, NewDocumentContextType documentContext)
 			where NewDocumentContextType : DocumentContext
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(documentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, EmitContext<DocumentContextType, ParentEmitContextType>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, EmitContext<TDocContext, TParentContext>>>() != null);
 
-			return EmitContext<NewDocumentContextType, ParentEmitContextType>.CopyWith(context, context.GetParentContext(), documentContext);
+			return EmitContext<NewDocumentContextType, TParentContext>.CopyWith(context, context.GetParentContext(), documentContext);
 		}
 
 		/// <summary>
@@ -253,13 +253,13 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// <param name="documentContext">The new document context to be used for this context.</param>
 		/// <returns>A new emit context with an updated document context.</returns>
 		public static EmitContext<NewDocumentContextType>
-			ReplaceDocumentContext<NewDocumentContextType, DocumentContextType>(this EmitContext<DocumentContextType> context, NewDocumentContextType documentContext)
+			ReplaceDocumentContext<NewDocumentContextType, TDocContext>(this EmitContext<TDocContext> context, NewDocumentContextType documentContext)
 			where NewDocumentContextType : DocumentContext
-			where DocumentContextType : DocumentContext
+			where TDocContext : DocumentContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(documentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, EmitContext<DocumentContextType>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType, EmitContext<TDocContext>>>() != null);
 
 			return EmitContext<NewDocumentContextType>.CopyWith(context, documentContext);
 		}
@@ -285,17 +285,17 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="parentContext">The new parent context to be used for this context.</param>
 		/// <returns>A new emit context with an updated parent context.</returns>
-		public static EmitContext<DocumentContextType, NewParentEmitContextType>
-			ReplaceParentContext<DocumentContextType, ParentEmitContextType, NewParentEmitContextType>(this EmitContext<DocumentContextType, ParentEmitContextType> context, NewParentEmitContextType parentContext)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, NewParentEmitContextType>
+			ReplaceParentContext<TDocContext, TParentContext, NewParentEmitContextType>(this EmitContext<TDocContext, TParentContext> context, NewParentEmitContextType parentContext)
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 			where NewParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(parentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextType, NewParentEmitContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<TDocContext, NewParentEmitContextType>>() != null);
 
-			return EmitContext<DocumentContextType, NewParentEmitContextType>.CopyWith(context, parentContext, context.GetDocumentContext());
+			return EmitContext<TDocContext, NewParentEmitContextType>.CopyWith(context, parentContext, context.GetDocumentContext());
 		}
 
 		/// <summary>
@@ -303,16 +303,16 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="parentContext">The new parent context to be used for this context.</param>
 		/// <returns>A new emit context with an updated parent context.</returns>
-		public static EmitContext<DocumentContextType, NewParentEmitContextType>
-			ReplaceParentContext<DocumentContextType, NewParentEmitContextType>(this EmitContext<DocumentContextType> context, NewParentEmitContextType parentContext)
-			where DocumentContextType : DocumentContext
+		public static EmitContext<TDocContext, NewParentEmitContextType>
+			ReplaceParentContext<TDocContext, NewParentEmitContextType>(this EmitContext<TDocContext> context, NewParentEmitContextType parentContext)
+			where TDocContext : DocumentContext
 			where NewParentEmitContextType : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(parentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextType, NewParentEmitContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<TDocContext, NewParentEmitContextType>>() != null);
 
-			return EmitContext<DocumentContextType, NewParentEmitContextType>.CopyWith(context, parentContext, context.GetDocumentContext());
+			return EmitContext<TDocContext, NewParentEmitContextType>.CopyWith(context, parentContext, context.GetDocumentContext());
 		}
 	}
 }

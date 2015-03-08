@@ -52,16 +52,16 @@ namespace XmlDocConverter.Fluent
 		}
 	}
 
-	public class DocumentContextWriteExtension<DocumentContextType>
-		where DocumentContextType : DocumentContext
+	public class DocumentContextWriteExtension<TDocContext>
+		where TDocContext : DocumentContext
 	{
 		public DocumentContextWriteExtension(WriteDelegate defaultDelegate)
 		{
 			Default = defaultDelegate;
 		}
 
-		public EmitContext<DocumentContextType, ParentEmitContextType> Write<ParentEmitContextType>(EmitContext<DocumentContextType, ParentEmitContextType> context)
-			where ParentEmitContextType : EmitContext
+		public EmitContext<TDocContext, TParentContext> Write<TParentContext>(EmitContext<TDocContext, TParentContext> context)
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 
@@ -79,19 +79,19 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="writer">The formatter to be used for this context.</param>
 		/// <returns>A new emit context with an updated formatter.</returns>
-		public EmitContext<CurrentDocumentContextType, ParentEmitContextType>
-			Using<CurrentDocumentContextType, ParentEmitContextType>(
-				EmitContext<CurrentDocumentContextType, ParentEmitContextType> context,
+		public EmitContext<CurrentDocumentContextType, TParentContext>
+			Using<CurrentDocumentContextType, TParentContext>(
+				EmitContext<CurrentDocumentContextType, TParentContext> context,
 				WriteDelegate writer)
 			where CurrentDocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TParentContext : EmitContext
 		{
 			Contract.Requires(context != null);
 
 			return context.UpdateLocalDataMap(map => map.SetItem(DataKey, writer ?? Default));
 		}
 		
-		public delegate EmitContext<DocumentContextType> WriteDelegate(EmitContext<DocumentContextType> context);
+		public delegate EmitContext<TDocContext> WriteDelegate(EmitContext<TDocContext> context);
 
 		public readonly WriteDelegate Default;
 		public readonly object DataKey = new object();
@@ -105,18 +105,18 @@ namespace XmlDocConverter.Fluent
 	{
 		private static DocumentContextWriteExtension<RootContext> RootContextWriter = new DocumentContextWriteExtension<RootContext>(context => context);
 
-		public static EmitContext<RootContext, ParentEmitContextType> Write<ParentEmitContextType>(this EmitContext<RootContext, ParentEmitContextType> context)
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<RootContext, TParentContext> Write<TParentContext>(this EmitContext<RootContext, TParentContext> context)
+			where TParentContext : EmitContext
 		{
 			return RootContextWriter.Write(context);
 		}
 
-		public static EmitContext<DocumentContextType, ParentEmitContextType>
-			UsingRootContextWriter<DocumentContextType, ParentEmitContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		public static EmitContext<TDocContext, TParentContext>
+			UsingRootContextWriter<TDocContext, TParentContext>(
+				this EmitContext<TDocContext, TParentContext> context,
 				DocumentContextWriteExtension<RootContext>.WriteDelegate writer)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return RootContextWriter.Using(context, writer);
 		}
@@ -124,18 +124,18 @@ namespace XmlDocConverter.Fluent
 
 		private static DocumentContextWriteExtension<DocumentContextCollection<RootContext>> RootContextCollectionWriter = new DocumentContextWriteExtension<DocumentContextCollection<RootContext>>(context => context);
 
-		public static EmitContext<DocumentContextCollection<RootContext>, ParentEmitContextType> Write<ParentEmitContextType>(this EmitContext<DocumentContextCollection<RootContext>, ParentEmitContextType> context)
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<DocumentContextCollection<RootContext>, TParentContext> Write<TParentContext>(this EmitContext<DocumentContextCollection<RootContext>, TParentContext> context)
+			where TParentContext : EmitContext
 		{
 			return RootContextCollectionWriter.Write(context);
 		}
 
-		public static EmitContext<DocumentContextType, ParentEmitContextType>
-			UsingRootContextCollectionWriter<DocumentContextType, ParentEmitContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		public static EmitContext<TDocContext, TParentContext>
+			UsingRootContextCollectionWriter<TDocContext, TParentContext>(
+				this EmitContext<TDocContext, TParentContext> context,
 				DocumentContextWriteExtension<DocumentContextCollection<RootContext>>.WriteDelegate writer)
-			where DocumentContextType : DocumentContext
-			where ParentEmitContextType : EmitContext
+			where TDocContext : DocumentContext
+			where TParentContext : EmitContext
 		{
 			return RootContextCollectionWriter.Using(context, writer);
 		}
@@ -144,8 +144,8 @@ namespace XmlDocConverter.Fluent
 		//public delegate void WriteRootContextCollectionDelegate(EmitContext<DocumentContextCollection<RootContext>> context);
 		//public static readonly WriteRootContextCollectionDelegate WriteRootContextCollectionDefault = context => context.ForEach(emit => { });
 
-		//public static ParentEmitContextType Write<ParentEmitContextType>(this EmitContext<DocumentContextCollection<RootContext>, ParentEmitContextType> context)
-		//	where ParentEmitContextType : EmitContext
+		//public static TParentContext Write<TParentContext>(this EmitContext<DocumentContextCollection<RootContext>, TParentContext> context)
+		//	where TParentContext : EmitContext
 		//{
 		//	Contract.Requires(context != null);
 
@@ -165,12 +165,12 @@ namespace XmlDocConverter.Fluent
 		///// <param name="context">The emit context.</param>
 		///// <param name="writer">The formatter to be used for this context.</param>
 		///// <returns>A new emit context with an updated formatter.</returns>
-		//public static EmitContext<DocumentContextType, ParentEmitContextType>
-		//	UsingRootContextCollectionWriter<DocumentContextType, ParentEmitContextType>(
-		//		this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		//public static EmitContext<TDocContext, TParentContext>
+		//	UsingRootContextCollectionWriter<TDocContext, TParentContext>(
+		//		this EmitContext<TDocContext, TParentContext> context,
 		//		WriteRootContextCollectionDelegate writer)
-		//	where DocumentContextType : DocumentContext
-		//	where ParentEmitContextType : EmitContext
+		//	where TDocContext : DocumentContext
+		//	where TParentContext : EmitContext
 		//{
 		//	Contract.Requires(context != null);
 
@@ -180,8 +180,8 @@ namespace XmlDocConverter.Fluent
 		//public delegate EmitContext<RootContext> WriteRootContextDelegate(EmitContext<RootContext> context);
 		//public static readonly WriteRootContextDelegate WriteRootContextDefault = context => context;
 		
-		//public static EmitContext<RootContext, ParentEmitContextType> Write<ParentEmitContextType>(this EmitContext<RootContext, ParentEmitContextType> context)
-		//	where ParentEmitContextType : EmitContext
+		//public static EmitContext<RootContext, TParentContext> Write<TParentContext>(this EmitContext<RootContext, TParentContext> context)
+		//	where TParentContext : EmitContext
 		//{
 		//	Contract.Requires(context != null);
 
@@ -199,12 +199,12 @@ namespace XmlDocConverter.Fluent
 		///// <param name="context">The emit context.</param>
 		///// <param name="writer">The formatter to be used for this context.</param>
 		///// <returns>A new emit context with an updated formatter.</returns>
-		//public static EmitContext<DocumentContextType, ParentEmitContextType> 
-		//	UsingRootContextWriter<DocumentContextType, ParentEmitContextType>(
-		//		this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		//public static EmitContext<TDocContext, TParentContext> 
+		//	UsingRootContextWriter<TDocContext, TParentContext>(
+		//		this EmitContext<TDocContext, TParentContext> context,
 		//		WriteRootContextDelegate writer)
-		//	where DocumentContextType : DocumentContext
-		//	where ParentEmitContextType : EmitContext
+		//	where TDocContext : DocumentContext
+		//	where TParentContext : EmitContext
 		//{
 		//	Contract.Requires(context != null);
 

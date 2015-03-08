@@ -44,20 +44,20 @@ namespace XmlDocConverter.Fluent
 		private readonly DocumentSource m_documentSource;
 	}
 
-	public interface IDocumentContextCollection<out DocumentContextType>
+	public interface IDocumentContextCollection<out TDocContext>
 	{
-		IEnumerable<DocumentContextType> Elements { get; }
+		IEnumerable<TDocContext> Elements { get; }
 	}
 
-	public class DocumentContextCollection<DocumentContextType> : DocumentContext<DocumentContextCollection<DocumentContextType>>, IDocumentContextCollection<DocumentContextType>
-		where DocumentContextType : DocumentContext
+	public class DocumentContextCollection<TDocContext> : DocumentContext<DocumentContextCollection<TDocContext>>, IDocumentContextCollection<TDocContext>
+		where TDocContext : DocumentContext
 	{
-		public DocumentContextCollection(IEnumerable<DocumentContextType> elements)
+		public DocumentContextCollection(IEnumerable<TDocContext> elements)
 		{
 			m_elements = elements;
 		}
 
-		public override Func<EmitContext<DocumentContextCollection<DocumentContextType>>, EmitContext> DefaultWriter
+		public override Func<EmitContext<DocumentContextCollection<TDocContext>>, EmitContext> DefaultWriter
 		{
 			get 
 			{
@@ -73,9 +73,9 @@ namespace XmlDocConverter.Fluent
 			}
 		}
 
-		public IEnumerable<DocumentContextType> Elements { get { return m_elements; } }
+		public IEnumerable<TDocContext> Elements { get { return m_elements; } }
 
-		private readonly IEnumerable<DocumentContextType> m_elements;
+		private readonly IEnumerable<TDocContext> m_elements;
 	}
 
 	
@@ -84,22 +84,22 @@ namespace XmlDocConverter.Fluent
 	/// </summary>
 	public static partial class DocumentContextWriterExtensions
 	{
-		public class DocumentContextWriteExtensionImpl<DocumentContextType>
-			where DocumentContextType : DocumentContext
+		public class DocumentContextWriteExtensionImpl<TDocContext>
+			where TDocContext : DocumentContext
 		{
-			public delegate EmitContext WriteDelegate(EmitContext<DocumentContextType> context);
+			public delegate EmitContext WriteDelegate(EmitContext<TDocContext> context);
 			
 			public static readonly object DataKey = new object();
 		}
 
-		public static EmitContext<DocumentContextType, ParentEmitContextType>
-			Write<DocumentContextType, ParentEmitContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context)
-			where DocumentContextType : DocumentContext<DocumentContextType>
-			where ParentEmitContextType : EmitContext
+		public static EmitContext<TDocContext, TParentContext>
+			Write<TDocContext, TParentContext>(
+				this EmitContext<TDocContext, TParentContext> context)
+			where TDocContext : DocumentContext<TDocContext>
+			where TParentContext : EmitContext
 		{
 			var writer = context.GetLocalData(
-				DocumentContextWriteExtensionImpl<DocumentContextType>.DataKey, 
+				DocumentContextWriteExtensionImpl<TDocContext>.DataKey, 
 				context.GetDocumentContext().DefaultWriter);
 
 			return writer(context)
@@ -107,13 +107,13 @@ namespace XmlDocConverter.Fluent
 				.ReplaceParentContext(context.GetParentContext());
 		}
 
-		public static EmitContext<DocumentContextType, ParentEmitContextType>
-			Using<DocumentContextType, ParentEmitContextType, ReplaceDocumentContextType>(
-				this EmitContext<DocumentContextType, ParentEmitContextType> context,
+		public static EmitContext<TDocContext, TParentContext>
+			Using<TDocContext, TParentContext, ReplaceDocumentContextType>(
+				this EmitContext<TDocContext, TParentContext> context,
 				DocumentContextWriteExtensionImpl<ReplaceDocumentContextType>.WriteDelegate writer)
-			where DocumentContextType : DocumentContext<DocumentContextType>
-			where ParentEmitContextType : EmitContext
-			where ReplaceDocumentContextType : DocumentContext<DocumentContextType>
+			where TDocContext : DocumentContext<TDocContext>
+			where TParentContext : EmitContext
+			where ReplaceDocumentContextType : DocumentContext<TDocContext>
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(writer != null);
