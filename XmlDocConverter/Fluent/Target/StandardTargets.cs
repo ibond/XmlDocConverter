@@ -107,7 +107,7 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(Contract.Result<EmitContext<DocumentContextType, ParentEmitContextType>>() != null);
 
 			// Set the base directory.
-			return context.SetLocalData(BaseDirectoryDataMapKey, directoryPath);
+			return context.UpdateLocalDataMap(map => map.SetItem(BaseDirectoryDataMapKey, directoryPath));
 		}
 		
 		/// <summary>

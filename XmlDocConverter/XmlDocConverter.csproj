@@ -64,6 +64,7 @@
     <Compile Include="Fluent\EmitContext.cs" />
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
     <Compile Include="Fluent\EmitContextCollection.cs" />
+    <Compile Include="Fluent\ExtensionSupport\EmitContextExtensionSupport.cs" />
     <Compile Include="Fluent\Writer\EmitTargetContext.cs" />
     <Compile Include="Fluent\Writer\Formatter\FormatterContext.cs" />
     <Compile Include="Fluent\Writer\Output\OutputContext.cs" />

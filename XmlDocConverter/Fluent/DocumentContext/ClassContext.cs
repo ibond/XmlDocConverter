@@ -13,7 +13,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// A context for a class.
 	/// </summary>
-	public class ClassContext : ScalarDocumentContext
+	public class ClassContext : ScalarDocumentContext<ClassContext>
 	{
 		/// <summary>
 		/// Construct an ClassContext.
@@ -39,6 +39,11 @@ namespace XmlDocConverter.Fluent
 		/// Gets the class type for this item.
 		/// </summary>
 		public Type Class { get { return m_classType; } }
+
+		public override Func<EmitContext<ClassContext>, EmitContext> DefaultWriter
+		{
+			get { return context => context; }
+		}
 
 		/// <summary>
 		/// The Type for this AssemblyItem.

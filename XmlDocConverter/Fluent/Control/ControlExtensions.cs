@@ -80,5 +80,29 @@ namespace XmlDocConverter.Fluent
 			// Always return this context.
 			return source.GetParentContext();
 		}
+
+		/// <summary>
+		/// Executes the function for each EmitContext and returns to the collection parent.
+		/// </summary>
+		/// <param name="source">The current emit context.</param>
+		/// <param name="action">The action containing the emit operation to run on each emit context.</param>
+		/// <returns>The parent of the emit context.</returns>
+		public static void ForEach<DocumentContextType>(
+				this EmitContext<DocumentContextCollection<DocumentContextType>> source,
+				Action<EmitContext<DocumentContextType>> action)
+			where DocumentContextType : DocumentContext
+		{
+			Contract.Requires(source != null);
+			Contract.Requires(action != null);
+
+			// Run the action for each element.
+			foreach (var element in source.GetDocumentContext().Elements)
+			{
+				source
+					.ReplaceParentContext(source)
+					.ReplaceDocumentContext(element)
+					.Scope(action);
+			}
+		}
 	}
 }

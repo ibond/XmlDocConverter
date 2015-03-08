@@ -13,7 +13,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// A context for an assembly.
 	/// </summary>
-	public class AssemblyContext : ScalarDocumentContext, IClassContextProvider
+	public class AssemblyContext : ScalarDocumentContext<AssemblyContext>, IClassContextProvider
 	{
 		/// <summary>
 		/// Construct an AssemblyContext.
@@ -38,6 +38,11 @@ namespace XmlDocConverter.Fluent
 		/// Gets the assembly for this item.
 		/// </summary>
 		public Assembly Assembly { get { return m_assembly; } }
+
+		public override Func<EmitContext<AssemblyContext>, EmitContext> DefaultWriter
+		{
+			get { return context => context; }
+		}
 
 		/// <summary>
 		/// Get the classes contained within this assembly.
