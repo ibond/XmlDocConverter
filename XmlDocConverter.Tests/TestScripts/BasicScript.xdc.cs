@@ -2,6 +2,7 @@
 using System.Linq;
 using XmlDocConverter;
 using XmlDocConverter.Fluent;
+using RazorEngine;
 
 class Script
 {

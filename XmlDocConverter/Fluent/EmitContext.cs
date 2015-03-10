@@ -134,6 +134,17 @@ namespace XmlDocConverter.Fluent
 		{
 			return context.m_writerContext;
 		}
+
+		/// <summary>
+		/// Don't return anything from ToString() to prevent this object from putting unintended text into templates.
+		/// 
+		/// Specifically this makes it unnecessary to wrap emit chains in @{...} in Razor templates.
+		/// </summary>
+		/// <returns>An empty string.</returns>
+		public override string ToString()
+		{
+			return String.Empty;
+		}
 		
 		// =====================================================================
 		#endregion

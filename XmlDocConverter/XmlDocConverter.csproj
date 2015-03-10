@@ -38,11 +38,18 @@
     <Reference Include="NuDoq">
       <HintPath>..\packages\NuDoq.1.2.5\lib\net35\NuDoq.dll</HintPath>
     </Reference>
+    <Reference Include="RazorEngine">
+      <HintPath>..\packages\RazorEngine.3.6.1\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,11 +59,20 @@
   <ItemGroup>
     <Compile Include="Converter\Converter.cs" />
     <Compile Include="Fluent\Control\ContextSelector.cs" />
-    <Compile Include="Fluent\DocumentContext\AssemblyContext.cs" />
-    <Compile Include="Fluent\DocumentContext\ClassContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\AssemblyContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\Doc\NuDoqContainerContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\EncapsulatingTypeContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\MethodContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\StructContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\TypeContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\MemberContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\FieldContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\ClassContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContextCollection.cs" />
-    <Compile Include="Fluent\DocumentContext\RootContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\DotNetDocumentContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\PropertyContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\RootContext.cs" />
     <Compile Include="Emit\XmlDocPathPair.cs" />
     <Compile Include="Emit\Emit.cs" />
     <Compile Include="Fluent\Control\ControlExtensions.cs" />
@@ -66,6 +82,7 @@
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
     <Compile Include="Fluent\EmitContextCollection.cs" />
     <Compile Include="Fluent\ExtensionSupport\EmitContextExtensionSupport.cs" />
+    <Compile Include="Fluent\Writer\DocumentContextWriterExtensions.cs" />
     <Compile Include="Fluent\Writer\EmitTargetContext.cs" />
     <Compile Include="Fluent\Writer\Formatter\FormatterContext.cs" />
     <Compile Include="Fluent\Writer\Output\OutputContext.cs" />

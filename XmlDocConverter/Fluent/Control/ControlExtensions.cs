@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RazorEngine.Templating;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -79,6 +80,25 @@ namespace XmlDocConverter.Fluent
 
 			// Always return this context.
 			return source.GetParentContext();
+		}
+
+
+		/// <summary>
+		/// Return control back to the parent emit context.  Useful for exiting out of a emit context collection without
+		/// doing anything.
+		/// </summary>
+		/// <param name="context">The current emit context.</param>
+		/// <returns>The parent emit context.</returns>
+		public static EmitContext<TDoc, TParent> TEST<TDoc, TParent>(this EmitContext<TDoc, TParent> context, Func<object, TemplateWriter> action)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			Contract.Requires(context != null);
+			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() == context);
+
+			var result = action("TEST").ToString();
+			
+			return context;
 		}
 	}
 }

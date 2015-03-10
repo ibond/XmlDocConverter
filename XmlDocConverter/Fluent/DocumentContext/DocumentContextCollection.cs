@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RazorEngine.Templating;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -44,19 +45,11 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for a document context collection just writes each element.
 		/// </summary>
-		public override EmitWriter<DocumentContextCollection<TDoc>>.Writer DefaultWriter
+		protected override Action<EmitContext<DocumentContextCollection<TDoc>>> GetDefaultWriter()
 		{
-			get
-			{
-				return (context, doc) =>
-				{
-					context.ForEach(element => element.Write());
-
-					return context;
-				};
-			}
+			return context => context.ForEach(element => element.Write());
 		}
-
+		
 		/// <summary>
 		/// Gets the elements in this collection.
 		/// </summary>

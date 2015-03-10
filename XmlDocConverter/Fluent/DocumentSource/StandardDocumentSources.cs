@@ -71,7 +71,7 @@ namespace XmlDocConverter.Fluent
 
 			// Load the documents and pass them to the doc source.
 			var assemblyMembers = pathPairs
-				.Select(pair => DocReader.Read(Assembly.ReflectionOnlyLoadFrom(pair.AssemblyPath), pair.XmlDocPath))
+				.Select(pair => DocReader.Read(Assembly.LoadFrom(pair.AssemblyPath), pair.XmlDocPath))
 				.ToImmutableList();
 
 			return context.ReplaceDocumentContext(new RootContext(new DocumentSource(assemblyMembers)));

@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 using XmlDocConverter.Fluent.Detail;
+using RazorEngine.Templating;
 
 namespace XmlDocConverter.Fluent
 {
 	/// <summary>
 	/// A context for an assembly.
 	/// </summary>
-	public class AssemblyContext : ScalarDocumentContext<AssemblyContext>, IClassContextProvider
+	public class AssemblyContext : DotNetDocumentContext<AssemblyContext>, ClassContext.IProvider, StructContext.IProvider
 	{
 		/// <summary>
 		/// Construct an AssemblyContext.
@@ -42,29 +43,28 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for an assembly.
 		/// </summary>
-		public override EmitWriter<AssemblyContext>.Writer DefaultWriter
+		protected override Action<EmitContext<AssemblyContext>> GetDefaultWriter()
 		{
-			get 
-			{
-				return (context, doc) => 
-					context//.WriteHeader(context.GetDocumentContext().Name)
-					.Select.Classes().Write(); 
-			}
+			return context => context.Select.Classes().Write();
 		}
 
 		/// <summary>
 		/// Get the classes contained within this assembly.
 		/// </summary>
-		public IEnumerable<ClassContext> Classes
+		public IEnumerable<ClassContext> GetClasses()
 		{
-			get
-			{
-				return m_assembly.GetTypes()
-					.Where(type => type.IsClass)
-					.Select(type => new ClassContext(DocumentSource, type));
-			}
+			return m_assembly.GetTypes()
+				.Where(type => type.IsClass)
+				.Select(type => new ClassContext(DocumentSource, type));
 		}
 
+		public IEnumerable<StructContext> GetStructs()
+		{
+			return m_assembly.GetTypes()
+				.Where(type => type.IsValueType && !type.IsEnum && !type.IsPrimitive)
+				.Select(type => new StructContext(DocumentSource, type));
+		}
+		
 		/// <summary>
 		/// The Assembly for this AssemblyItem.
 		/// </summary>
@@ -94,12 +94,14 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected assembly emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>> Assemblies<SourceDocumentContextType, SourceParentEmitContextType>(this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IAssemblyContextProvider> selector)
-			where SourceDocumentContextType : DocumentContext
-			where SourceParentEmitContextType : EmitContext
+		public static EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<TDoc, TParent>> 
+			Assemblies<TDoc, TParent>(
+				this IContextSelector<TDoc, TParent, IAssemblyContextProvider> selector)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<TDoc, TParent>>>() != null);
 
 			return selector.EmitContext
 				.ReplaceParentContext(selector.EmitContext)
@@ -111,14 +113,14 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected assembly emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<AssemblyContext>, SourceParentEmitContextType> 
-			Assemblies<SourceDocumentContextType, SourceParentEmitContextType>(
-				this IContextSelector<SourceDocumentContextType, SourceParentEmitContextType, IDocumentContextCollection<IAssemblyContextProvider>> selector)
-			where SourceDocumentContextType : DocumentContext
-			where SourceParentEmitContextType : EmitContext
+		public static EmitContext<DocumentContextCollection<AssemblyContext>, TParent> 
+			Assemblies<TDoc, TParent>(
+				this IContextSelector<TDoc, TParent, IDocumentContextCollection<IAssemblyContextProvider>> selector)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<SourceDocumentContextType, SourceParentEmitContextType>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<TDoc, TParent>>>() != null);
 
 			var col = new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Elements.SelectMany(element => element.Assemblies));
 			return selector.EmitContext

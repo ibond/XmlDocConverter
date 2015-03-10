@@ -121,7 +121,7 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		{
 			return EmitContext.GetWriterContext(context).OutputContext;
 		}
-
+		
 		/// <summary>
 		/// Get the document context from the context.
 		/// </summary>
@@ -228,6 +228,18 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 			return context.GetWriterContext().FormatterContext != formatter
 				? ReplaceWriterContext(context, context.GetWriterContext().ReplaceFormatterContext(formatter))
 				: context;
+		}
+
+		/// <summary>
+		/// Replace the output context for this emit context.
+		/// </summary>
+		/// <param name="output">The output context to be used for this context.</param>
+		/// <returns>A new emit context with an updated output context.</returns>
+		public static EmitContext<TDoc, TParent> ReplaceOutputContext<TDoc, TParent>(this EmitContext<TDoc, TParent> context, EmitOutputContext output)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			return ReplaceWriterContext(context, context.GetWriterContext().ReplaceOutputContext(output));
 		}
 
 		/// <summary>

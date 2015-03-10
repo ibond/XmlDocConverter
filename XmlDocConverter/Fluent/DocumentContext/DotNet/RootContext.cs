@@ -1,4 +1,5 @@
 ﻿using NuDoq;
+using RazorEngine.Templating;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -13,7 +14,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// The root context for emitting documents.  This effectively contains a list of assemblies.
 	/// </summary>
-	public class RootContext : ScalarDocumentContext<RootContext>, IAssemblyContextProvider, IClassContextProvider
+	public class RootContext : DotNetDocumentContext<RootContext>, IAssemblyContextProvider, ClassContext.IProvider
 	{
 		/// <summary>
 		/// Construct an RootContext.
@@ -38,20 +39,17 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// Groups the items in the EmitContext by class.
 		/// </summary>
-		public IEnumerable<ClassContext> Classes
+		public IEnumerable<ClassContext> GetClasses()
 		{
-			get
-			{
-				return Assemblies.SelectMany(assembly => assembly.Classes);
-			}
+			return Assemblies.SelectMany(assembly => assembly.GetClasses());
 		}
 
 		/// <summary>
 		/// The default writer for the root context.
 		/// </summary>
-		public override EmitWriter<RootContext>.Writer DefaultWriter
+		protected override Action<EmitContext<RootContext>> GetDefaultWriter()
 		{
-			get { return (context, doc) => context.Select.Assemblies().Write(); }
+			return context => context.Select.Assemblies().Write();
 		}
 	}
 }

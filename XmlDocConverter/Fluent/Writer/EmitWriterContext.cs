@@ -61,7 +61,24 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(formatter != null);
 			Contract.Requires(Contract.Result<EmitWriterContext>() != null);
 
-			return new EmitWriterContext(OutputContext, formatter);
+			return FormatterContext != formatter
+				? new EmitWriterContext(OutputContext, formatter)
+				: this;
+		}
+
+		/// <summary>
+		/// Replace the output context for this writer context.
+		/// </summary>
+		/// <param name="formatter">The output context to be used for this context.</param>
+		/// <returns>A new writer context with an updated output context.</returns>
+		public EmitWriterContext ReplaceOutputContext(EmitOutputContext output)
+		{
+			Contract.Requires(output != null);
+			Contract.Requires(Contract.Result<EmitWriterContext>() != null);
+
+			return OutputContext != output
+				? new EmitWriterContext(output, FormatterContext)
+				: this;
 		}
 
 		/// <summary>
