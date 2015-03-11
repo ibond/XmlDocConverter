@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NuDoq;
 using System.Reflection;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
@@ -69,12 +68,7 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(pathPairs != null);
 			Contract.Requires(Contract.ForAll(pathPairs, p => p != null));
 
-			// Load the documents and pass them to the doc source.
-			var assemblyMembers = pathPairs
-				.Select(pair => DocReader.Read(Assembly.LoadFrom(pair.AssemblyPath), pair.XmlDocPath))
-				.ToImmutableList();
-
-			return context.ReplaceDocumentContext(new RootContext(new DocumentSource(assemblyMembers)));
+			return context.ReplaceDocumentContext(new RootContext(new DocumentSource(pathPairs)));
 		}
 	}
 }

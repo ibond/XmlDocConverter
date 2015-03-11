@@ -1,5 +1,4 @@
-﻿using NuDoq;
-using RazorEngine.Templating;
+﻿using RazorEngine.Templating;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -32,7 +31,7 @@ namespace XmlDocConverter.Fluent
 		{
 			get
 			{
-				return DocumentSource.AssemblyMembers.Select(source => new AssemblyContext(DocumentSource, source.Assembly));
+				return DocumentSource.Assemblies.Select(assembly => new AssemblyContext(DocumentSource, assembly));
 			}
 		}
 		
@@ -47,9 +46,9 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for the root context.
 		/// </summary>
-		protected override Action<EmitContext<RootContext>> GetDefaultWriter()
+		protected override Action<EmitWriterItem<RootContext>> GetDefaultWriter()
 		{
-			return context => context.Select.Assemblies().Write();
+			return item => item.Emit.Select.Assemblies().Write();
 		}
 	}
 }

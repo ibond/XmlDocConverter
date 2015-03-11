@@ -27,9 +27,9 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// Get the default writer for this document context.
 		/// </summary>
-		protected virtual Action<EmitContext<TDerived>> GetDefaultWriter()
+		protected virtual Action<EmitWriterItem<TDerived>> GetDefaultWriter()
 		{
-			return context => { };
+			return item => { };
 		}
 
 		/// <summary>
@@ -39,7 +39,7 @@ namespace XmlDocConverter.Fluent
 		{
 			get
 			{
-				return item => new TemplateWriter(dummyWriter => GetDefaultWriter()(item.Emit));
+				return item => new TemplateWriter(dummyWriter => GetDefaultWriter()(item));
 			}
 		}
 	}

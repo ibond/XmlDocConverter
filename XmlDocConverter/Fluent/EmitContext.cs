@@ -1,5 +1,4 @@
-﻿using NuDoq;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -54,7 +53,7 @@ namespace XmlDocConverter.Fluent
 		public static EmitContextRoot<RootContext> CreateRoot()
 		{
 			return CreateRoot(
-				new RootContext(new DocumentSource(ImmutableList.Create<AssemblyMembers>())),
+				new RootContext(new DocumentSource(Enumerable.Empty<XmlDocPathPair>())),
 				new ConcurrentDictionary<object,object>(),
 				ImmutableDictionary<object,object>.Empty,
 				new EmitWriterContext());

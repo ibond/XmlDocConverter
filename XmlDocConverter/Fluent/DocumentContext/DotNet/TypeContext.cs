@@ -7,14 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 using XmlDocConverter.Fluent.Detail;
-using NuDoq;
 
 namespace XmlDocConverter.Fluent
 {
 	/// <summary>
 	/// A base context for .NET types.
 	/// </summary>
-	public abstract class TypeContext<TDerived> : DotNetDocumentContext<TDerived>, NuDoqContainerContext.ISummaryProvider
+	public abstract class TypeContext<TDerived> : DotNetDocumentContext<TDerived>, DocEntryContext.IProvider
 		where TDerived : TypeContext<TDerived>
 	{
 		/// <summary>
@@ -58,14 +57,12 @@ namespace XmlDocConverter.Fluent
 		}
 
 		/// <summary>
-		/// Get the documentation summary for this type.
+		/// Get the documentation entry for this type.
 		/// </summary>
-		/// <returns>The NuDoq summary for this type.</returns>
-		public NuDoqContainerContext GetSummary()
+		/// <returns>The doc entry for this type.</returns>
+		public DocEntryContext GetDocEntry()
 		{
-			return new NuDoqContainerContext(
-				DocumentSource, 
-				DocumentSource.GetTypeDocs(Type).Elements.OfType<Summary>().FirstOrDefault());
+			return new DocEntryContext(DocumentSource, DocumentSource.TryGetEntry(Type));
 		}
 		
 		/// <summary>

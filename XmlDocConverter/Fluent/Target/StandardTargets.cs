@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
@@ -84,12 +85,12 @@ namespace XmlDocConverter.Fluent
 						// Create the directory.
 						Directory.CreateDirectory(Path.GetDirectoryName(fullFilePath));
 
-						// Write all of the data.
-						using (var writer = new StreamWriter(File.Open(fullFilePath, FileMode.Create, FileAccess.Write)))
-						{
-							foreach (var source in dataSources)
-								writer.Write(source);
-						}
+						// Convert all of the data to a string so we can replace newlines.
+						var fullFileContents = string.Join("", dataSources);
+						var standardizedContents = Regex.Replace(fullFileContents, "\r\n|\r|\n", Environment.NewLine);
+
+						// Write the text to a file.
+						File.WriteAllText(fullFilePath, standardizedContents);
 					}));
 		}
 

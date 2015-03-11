@@ -35,9 +35,6 @@
     <Reference Include="NDesk.Options">
       <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
     </Reference>
-    <Reference Include="NuDoq">
-      <HintPath>..\packages\NuDoq.1.2.5\lib\net35\NuDoq.dll</HintPath>
-    </Reference>
     <Reference Include="RazorEngine">
       <HintPath>..\packages\RazorEngine.3.6.1\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
@@ -60,7 +57,8 @@
     <Compile Include="Converter\Converter.cs" />
     <Compile Include="Fluent\Control\ContextSelector.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\AssemblyContext.cs" />
-    <Compile Include="Fluent\DocumentContext\DotNet\Doc\NuDoqContainerContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\Doc\DocEntryContext.cs" />
+    <Compile Include="Fluent\DocumentSource\XmlDocWriter.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\EncapsulatingTypeContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\MethodContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\StructContext.cs" />
