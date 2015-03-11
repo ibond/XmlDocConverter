@@ -33,8 +33,9 @@ namespace XmlDocConverter.Fluent
 		public interface IProvider
 		{
 			/// <summary>
-			/// Get all properties.
+			/// Get all classes using the default filter.
 			/// </summary>
+			/// <returns>An enumerable containing all classes passing the default filter.</returns>
 			IEnumerable<ClassContext> GetClasses();
 		}
 	}

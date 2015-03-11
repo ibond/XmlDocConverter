@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 using XmlDocConverter.Fluent.Detail;
 using RazorEngine.Templating;
+using System.Runtime.CompilerServices;
 
 namespace XmlDocConverter.Fluent
 {
@@ -54,14 +55,18 @@ namespace XmlDocConverter.Fluent
 		public IEnumerable<ClassContext> GetClasses()
 		{
 			return m_assembly.GetTypes()
-				.Where(type => type.IsClass)
+				.Where(type => type.IsClass && Attribute.GetCustomAttribute(type, typeof(CompilerGeneratedAttribute)) == null)
 				.Select(type => new ClassContext(DocumentSource, type));
 		}
 
 		public IEnumerable<StructContext> GetStructs()
 		{
 			return m_assembly.GetTypes()
-				.Where(type => type.IsValueType && !type.IsEnum && !type.IsPrimitive)
+				.Where(type => 
+					type.IsValueType 
+					&& !type.IsEnum 
+					&& !type.IsPrimitive 
+					&& Attribute.GetCustomAttribute(type, typeof(CompilerGeneratedAttribute)) == null)
 				.Select(type => new StructContext(DocumentSource, type));
 		}
 		
@@ -69,18 +74,18 @@ namespace XmlDocConverter.Fluent
 		/// The Assembly for this AssemblyItem.
 		/// </summary>
 		private readonly Assembly m_assembly;
-	}
 
 
-	/// <summary>
-	/// The interface for an object that provides an assembly context.
-	/// </summary>
-	public interface IAssemblyContextProvider
-	{
 		/// <summary>
-		/// Get all assemblies.
+		/// The interface for an object that provides an assembly context.
 		/// </summary>
-		IEnumerable<AssemblyContext> Assemblies { get; }
+		public interface IProvider
+		{
+			/// <summary>
+			/// Get all assemblies.
+			/// </summary>
+			IEnumerable<AssemblyContext> GetAssemblies();
+		}
 	}
 
 	
@@ -96,7 +101,7 @@ namespace XmlDocConverter.Fluent
 		/// <returns>The selected assembly emit contexts.</returns>
 		public static EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<TDoc, TParent>> 
 			Assemblies<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IAssemblyContextProvider> selector)
+				this IContextSelector<TDoc, TParent, AssemblyContext.IProvider> selector)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{
@@ -105,7 +110,7 @@ namespace XmlDocConverter.Fluent
 
 			return selector.EmitContext
 				.ReplaceParentContext(selector.EmitContext)
-				.ReplaceDocumentContext(new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Assemblies));
+				.ReplaceDocumentContext(new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.GetAssemblies()));
 		}
 
 		/// <summary>
@@ -115,14 +120,14 @@ namespace XmlDocConverter.Fluent
 		/// <returns>The selected assembly emit contexts.</returns>
 		public static EmitContext<DocumentContextCollection<AssemblyContext>, TParent> 
 			Assemblies<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<IAssemblyContextProvider>> selector)
+				this IContextSelector<TDoc, TParent, IDocumentContextCollection<AssemblyContext.IProvider>> selector)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
 			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<AssemblyContext>, EmitContext<TDoc, TParent>>>() != null);
 
-			var col = new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Elements.SelectMany(element => element.Assemblies));
+			var col = new DocumentContextCollection<AssemblyContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetAssemblies()));
 			return selector.EmitContext
 				.ReplaceDocumentContext(col);
 		}

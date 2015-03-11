@@ -52,6 +52,11 @@ namespace XmlDocConverter.Fluent
 			WriterFunction = writer;
 		}
 
+		public EmitWriter(Action<EmitWriterItem<TDoc>> writer)
+		{			
+			WriterFunction = item => new TemplateWriter(dummyWriter => writer(item));
+		}
+
 		/// <summary>
 		/// The emit writer function.
 		/// </summary>

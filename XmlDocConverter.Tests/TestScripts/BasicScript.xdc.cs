@@ -13,7 +13,8 @@ class Script
 			.InDirectory(@"C:\Work\temp\xdc_test")
 			.From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
 			.ToFile("ProcessArgumentTools.md")
-			.Write()
+			//.Using(new EmitWriter<AssemblyContext>(emit =>
+				
 			;
 	}
 }

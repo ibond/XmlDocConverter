@@ -170,6 +170,7 @@ namespace XmlDocConverter.Fluent
 
 		public virtual XElement FixMember(XElement rawElement)
 		{
+
 			// Convert the element to text.
 			var rawElementText = String.Join("", rawElement.Nodes());
 			

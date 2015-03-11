@@ -9,7 +9,7 @@
        .InDirectory(@"C:\Work\temp\xdc_test")
        .From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
        .ToFile("ProcessArgumentTools.md")
-       
+
        .Using(new EmitWriter<AssemblyContext>(
 @<text>
 # Assembly: @item.Document.Name
@@ -26,11 +26,17 @@
 
 @item.Emit.Select.Doc().Write()
 
-### Properties
-@item.Emit.Select.Properties().Write()
+@{
+  var properties = item.Emit.Select.Properties();
+  if (properties.Any())
+  {
+    @:### Properties
+    properties.Write();
+  }
+}
 
 ### Methods
-@item.Emit.Select.Properties().Write()
+@item.Emit.Select.Methods().Write()
 
 ### Fields
 @item.Emit.Select.Fields().Write()
@@ -44,12 +50,12 @@
 @item.Emit.Select.Properties().Write()
 
 ### Methods
-@item.Emit.Select.Properties().Write()
+@item.Emit.Select.Methods().Write()
 
 ### Fields
 @item.Emit.Select.Fields().Write()
 </text>))
-
+              
        .Using(new EmitWriter<FieldContext>(
         @:- Field: @item.Document.Name
         ))

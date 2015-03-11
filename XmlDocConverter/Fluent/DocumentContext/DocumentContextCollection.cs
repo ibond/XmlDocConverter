@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
 namespace XmlDocConverter.Fluent
 {
@@ -59,5 +60,35 @@ namespace XmlDocConverter.Fluent
 		/// The elements in this collection.
 		/// </summary>
 		private readonly IEnumerable<TDoc> m_elements;
+	}
+
+	public static class DocumentContextCollectionExtensions
+	{
+		public static bool Any<TDocElement, TParent>(this EmitContext<DocumentContextCollection<TDocElement>, TParent> context)
+			where TDocElement : DocumentContext<TDocElement>
+			where TParent : EmitContext
+		{
+			Contract.Requires(context != null);
+
+			return context.GetDocumentContext().Elements.Any();
+		}
+
+
+		public static EmitContext<DocumentContextCollection<TDocElement>, TParent>
+			IfAny<TDocElement, TParent>(
+				this EmitContext<DocumentContextCollection<TDocElement>, TParent> context, 
+				Action<EmitContext<DocumentContextCollection<TDocElement>, TParent>> action)
+			
+			where TDocElement : DocumentContext<TDocElement>
+			where TParent : EmitContext
+		{
+			Contract.Requires(context != null);
+			Contract.Requires(action != null);
+
+			if (context.Any())
+				action(context);
+
+			return context;
+		}
 	}
 }
