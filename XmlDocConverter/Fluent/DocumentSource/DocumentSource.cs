@@ -141,34 +141,6 @@ namespace XmlDocConverter.Fluent
 
 	public class DocumentSourcePolicy
 	{
-		private IEnumerable<string> EnumerateLines(string text)
-		{
-			Contract.Requires(text != null);
-
-			var newlineChars = new char[] { '\r', '\n' };
-			int prevIndex = 0;
-			int index = text.IndexOfAny(newlineChars);
-			while (index != -1)
-			{
-				// The end is one past the newline.
-				++index;
-
-				// Skip entire \r\n pairs.
-				if (text[index - 1] == '\r' && index < text.Length && text[index] == '\n')
-					++index;
-
-				yield return text.Substring(prevIndex, index - prevIndex);
-
-				prevIndex = index;
-
-				// Find the next line ending.
-				index = text.IndexOfAny(newlineChars, index);
-			}
-
-			// Return the last line in the string.
-			yield return text.Substring(prevIndex);
-		}
-
 		private string GetContentsAsString(XElement element)
 		{
 			var reader = element.CreateReader();
@@ -178,27 +150,20 @@ namespace XmlDocConverter.Fluent
 
 		private static readonly char[] NonNewlineWhitespaceChars = Enumerable.Range(0, ((int)char.MaxValue) + 1)
 			.Select(i => (char)i)
-			.Where(c => c != '\r' && c != '\n' && Char.IsWhiteSpace(c))
+			.Where(c => c != '\n' && Char.IsWhiteSpace(c))
 			.ToArray();
 		public virtual string TrimWhitespaceLines(string content)
 		{
-			var trimmedContent = content.Trim(NonNewlineWhitespaceChars);
-			if(trimmedContent.Length == 0)
+			var trimmed = content.Trim(NonNewlineWhitespaceChars);
+			if (trimmed.Length == 0 || (trimmed.Length == 1 && trimmed[0] == '\n'))
 				return String.Empty;
-			
-			// Remove the leading newline.
-			if( trimmedContent.StartsWith("\r\n"))
-				trimmedContent = trimmedContent.Substring(2);
-			else if(trimmedContent.StartsWith("\r") || trimmedContent.StartsWith("\n"))
-				trimmedContent = trimmedContent.Substring(1);
 
-			// Remove the trailing newline.
-			if(trimmedContent.EndsWith("\r\n"))
-				trimmedContent = trimmedContent.Substring(0, trimmedContent.Length - 2);
-			else if(trimmedContent.EndsWith("\r") || trimmedContent.EndsWith("\n"))
-				trimmedContent = trimmedContent.Substring(0, trimmedContent.Length - 1);
+			// Remove the leading and trailing newline.
+			int substringStart = trimmed[0] == '\n' ? 1 : 0;
+			int substringLength = trimmed.Length - substringStart -
+				(trimmed[trimmed.Length - 1] == '\n' ? 1 : 0);
 
-			return trimmedContent;
+			return trimmed.Substring(substringStart, substringLength);
 		}
 
 		public virtual XElement PreprocessMember(XElement rawElement)
@@ -213,7 +178,7 @@ namespace XmlDocConverter.Fluent
 			var trimmedContents = TrimWhitespaceLines(contents);
 						
 			// Split into lines.
-			var lines = EnumerateLines(trimmedContents).ToArray();
+			var lines = trimmedContents.Split(new char[] { '\n' });
 			
 			// Find the line with the least spaces.
 			int minLeadingSpaces = int.MaxValue;
@@ -231,7 +196,7 @@ namespace XmlDocConverter.Fluent
 			}
 
 			// Strip the spaces and recombine the strings.
-			var resultString = string.Join("", lines.Select(line => line.Substring(minLeadingSpaces)));
+			var resultString = string.Join("\n", lines.Select(line => line.Substring(minLeadingSpaces)));
 
 			// Create a new element.
 			var contentsElement = XElement.Parse("<root>" + resultString + "</root>", LoadOptions.PreserveWhitespace);

@@ -87,21 +87,21 @@ class Script
 
 			.Using(new EmitWriter<FieldContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
-				.WithFilter(RenderFilter.Chain(RenderFilter.CollapseNewlines, RenderFilter.RegexReplace("\r\n|\r|\n", "<br>")),
+				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
 					e2 => e2.Select.Doc().Select.Element("summary").Render())
 				.Write.L()
 			))
 
 			.Using(new EmitWriter<MethodContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
-				.WithFilter(RenderFilter.Chain(RenderFilter.CollapseNewlines, RenderFilter.RegexReplace("\r\n|\r|\n", "<br>")),
+				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
 					e2 => e2.Select.Doc().Select.Element("summary").Render())
 				.Write.L()
 			))
 
 			.Using(new EmitWriter<PropertyContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
-				.WithFilter(RenderFilter.Chain(RenderFilter.CollapseNewlines, RenderFilter.RegexReplace("\r\n|\r|\n", "<br>")),
+				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
 					e2 => e2.Select.Doc().Select.Element("summary").Render())
 				.Write.L()
 			))

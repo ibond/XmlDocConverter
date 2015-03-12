@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -84,13 +85,14 @@ namespace XmlDocConverter.Fluent
 					{
 						// Create the directory.
 						Directory.CreateDirectory(Path.GetDirectoryName(fullFilePath));
-
-						// Convert all of the data to a string so we can replace newlines.
-						var fullFileContents = string.Join("", dataSources);
-						var standardizedContents = Regex.Replace(fullFileContents, "\r\n|\r|\n", Environment.NewLine);
-
-						// Write the text to a file.
-						File.WriteAllText(fullFilePath, standardizedContents);
+						
+						// Write all of the data.
+						using (var writer = new StreamWriter(File.Open(fullFilePath, FileMode.Create, FileAccess.Write)))
+						{
+							// Replace newlines with the native version.							
+							foreach (var source in dataSources.Select(s => s.Replace("\n", Environment.NewLine)))
+								writer.Write(source);
+						}
 					}));
 		}
 

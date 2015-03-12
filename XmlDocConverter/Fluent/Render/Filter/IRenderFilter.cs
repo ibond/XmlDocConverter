@@ -60,5 +60,10 @@ namespace XmlDocConverter.Fluent
 			private readonly IOutputSource m_source;
 			private readonly IRenderFilter m_filter;
 		}
+
+		public static IRenderFilter Then(this IRenderFilter firstFilter, IRenderFilter secondFilter)
+		{
+			return new RenderFilter(data => secondFilter.Apply(firstFilter.Apply(data)));
+		}
 	}
 }

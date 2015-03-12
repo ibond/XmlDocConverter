@@ -32,15 +32,16 @@ namespace XmlDocConverter.Fluent
 
 		public static readonly RenderFilter Identity = new RenderFilter((IEnumerable<string> data) => data);
 		public static readonly RenderFilter Trim = new RenderFilter(str => str.Trim());
+		
 
 		public static readonly RenderFilter CollapseNewlines = new RenderFilter(
 			str =>
 			{
 				// Single consecutive newlines collapse to a space.
-				var result = Regex.Replace(str, @"(\S)[^\S\r\n]*(?:\r\n|\r|\n)[^\S\r\n]*(\S)", @"$1 $2");
+				var result = Regex.Replace(str, @"(^|\S)[^\S\n]*(?:\n)[^\S\n]*(\S|$)", @"$1 $2");
 
 				// Multiple consecutive newlines collapse to a single newline.
-				result = Regex.Replace(result, @"(\S)(?:[^\S\r\n]*(\r\n|\r|\n)[^\S\r\n]*)+(\S)", @"$1$2$3");
+				result = Regex.Replace(result, @"(^|\S)(?:[^\S\n]*(\n)[^\S\n]*)+(\S|$)", @"$1$2$3");
 
 				return result;
 			});
@@ -53,20 +54,6 @@ namespace XmlDocConverter.Fluent
 		public static RenderFilter RegexReplace(string pattern, string replacement)
 		{
 			return new RenderFilter(str => Regex.Replace(str, pattern, replacement));
-		}
-
-		public static RenderFilter Chain(params IRenderFilter[] filters)
-		{
-			return new RenderFilter(
-				data =>
-				{
-					foreach (var filter in filters)
-					{
-						data = filter.Apply(data);
-					}
-
-					return data;
-				});
 		}
 	}
 }

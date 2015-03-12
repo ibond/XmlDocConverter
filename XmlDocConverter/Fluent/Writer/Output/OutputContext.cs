@@ -13,6 +13,11 @@ namespace XmlDocConverter.Fluent
 	/// </summary>
 	public class EmitOutputContext : TextWriter, IOutputSource
 	{
+		public EmitOutputContext()
+		{
+			this.NewLine = "\n";
+		}
+
 		/// <summary>
 		/// Get the list of strings contained within this source.
 		/// </summary>
