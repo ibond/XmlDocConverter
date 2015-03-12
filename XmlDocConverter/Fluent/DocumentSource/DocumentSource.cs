@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace XmlDocConverter.Fluent
@@ -103,12 +104,12 @@ namespace XmlDocConverter.Fluent
 		/// Get the element specified by the given name.
 		/// </summary>
 		/// <param name="elementName">The name of the XML element to get.</param>
-		/// <returns>The first element with the given name.  Returns null if the element does not exist.</returns>
+		/// <returns>The first element with the given name.</returns>
 		public XElement GetElement(string elementName)
 		{
 			Contract.Requires(elementName != null);
 
-			return XElement.Element(elementName);
+			return XElement.Element(elementName) ?? new XElement(elementName);
 		}
 
 		/// <summary>
@@ -120,7 +121,7 @@ namespace XmlDocConverter.Fluent
 			return summary != null ? summary.Value : "";
 		}
 
-		public void WriteElement(string elementName, XmlDocWriter writer, EmitOutputContext output)
+		public void WriteElement(string elementName, IXmlDocWriter writer, EmitOutputContext output)
 		{
 			Contract.Requires(writer != null);
 			Contract.Requires(output != null);
@@ -168,34 +169,60 @@ namespace XmlDocConverter.Fluent
 			yield return text.Substring(prevIndex);
 		}
 
-		public virtual XElement FixMember(XElement rawElement)
+		private string GetContentsAsString(XElement element)
 		{
+			var reader = element.CreateReader();
+			reader.MoveToContent();
+			return reader.ReadInnerXml();
+		}
 
-			// Convert the element to text.
-			var rawElementText = String.Join("", rawElement.Nodes());
+		private static readonly char[] NonNewlineWhitespaceChars = Enumerable.Range(0, ((int)char.MaxValue) + 1)
+			.Select(i => (char)i)
+			.Where(c => c != '\r' && c != '\n' && Char.IsWhiteSpace(c))
+			.ToArray();
+		public virtual string TrimWhitespaceLines(string content)
+		{
+			var trimmedContent = content.Trim(NonNewlineWhitespaceChars);
+			if(trimmedContent.Length == 0)
+				return String.Empty;
 			
+			// Remove the leading newline.
+			if( trimmedContent.StartsWith("\r\n"))
+				trimmedContent = trimmedContent.Substring(2);
+			else if(trimmedContent.StartsWith("\r") || trimmedContent.StartsWith("\n"))
+				trimmedContent = trimmedContent.Substring(1);
+
+			// Remove the trailing newline.
+			if(trimmedContent.EndsWith("\r\n"))
+				trimmedContent = trimmedContent.Substring(0, trimmedContent.Length - 2);
+			else if(trimmedContent.EndsWith("\r") || trimmedContent.EndsWith("\n"))
+				trimmedContent = trimmedContent.Substring(0, trimmedContent.Length - 1);
+
+			return trimmedContent;
+		}
+
+		public virtual XElement PreprocessMember(XElement rawElement)
+		{
+			// Copy the element so we can modify it.
+			var elementCopy = new XElement(rawElement);
+
+			// Get the contents of this element as a string so we can unindent it.
+			var contents = GetContentsAsString(elementCopy);
+
+			// Trim leading and trailing whitespace lines.
+			var trimmedContents = TrimWhitespaceLines(contents);
+						
 			// Split into lines.
-			var lines = EnumerateLines(rawElementText).ToArray();
-
-			// We expect there to be at least 3 lines, if there aren't then don't bother trying to process this.
-			if (lines.Length < 3)
-				return rawElement;
-
-			// There should only be whitespace in the first and last lines.  If not we don't process this.
-			if(!string.IsNullOrWhiteSpace(lines[0]) || !string.IsNullOrWhiteSpace(lines[lines.Length- 1]))
-				return rawElement;
+			var lines = EnumerateLines(trimmedContents).ToArray();
 			
-			// Ignore the first and last lines since they enter and exit into the <member> element.
-			var contentLines = lines.Skip(1).Take(lines.Length - 2);
-
 			// Find the line with the least spaces.
 			int minLeadingSpaces = int.MaxValue;
-			foreach (var line in contentLines)
+			foreach (var line in lines)
 			{
 				minLeadingSpaces = Math.Min(minLeadingSpaces, line.Length);
-				for(int i = 0; i < line.Length && i < minLeadingSpaces; ++i)
+				for (int i = 0; i < line.Length && i < minLeadingSpaces; ++i)
 				{
-					if(line[i] != ' ')
+					if (line[i] != ' ')
 					{
 						minLeadingSpaces = i;
 						break;
@@ -204,13 +231,13 @@ namespace XmlDocConverter.Fluent
 			}
 
 			// Strip the spaces and recombine the strings.
-			var resultString = string.Join("", contentLines.Select(line => line.Substring(minLeadingSpaces)));
+			var resultString = string.Join("", lines.Select(line => line.Substring(minLeadingSpaces)));
 
 			// Create a new element.
 			var contentsElement = XElement.Parse("<root>" + resultString + "</root>", LoadOptions.PreserveWhitespace);
 			var newElement = new XElement(rawElement);
 			newElement.ReplaceNodes(contentsElement.Nodes());
-
+			
 			return newElement;
 		}
 	}
@@ -250,7 +277,7 @@ namespace XmlDocConverter.Fluent
 
 				// Create an entry for each member.
 				var memberEntries = xmlDocument.Root.Element("members").Elements()
-					.Select(memberElement => new DocumentSourceMemberEntry(assembly, m_policy.FixMember(memberElement), memberElement, memberElement.Attribute("name").Value));
+					.Select(memberElement => new DocumentSourceMemberEntry(assembly, m_policy.PreprocessMember(memberElement), memberElement, memberElement.Attribute("name").Value));
 
 				// Add each of the entries to the lookup.
 				lookupBuilder.AddRange(memberEntries.Select(entry =>
@@ -286,19 +313,85 @@ namespace XmlDocConverter.Fluent
 				case MemberTypes.Event:
 					return "E:";
 				case MemberTypes.Field:
-					return "F:";
+					return GetIdString((FieldInfo)memberInfo);
 				case MemberTypes.Constructor:
 				case MemberTypes.Method:
-					return "M:";
+					return GetIdString((MethodInfo)memberInfo);
 				case MemberTypes.Property:
-					return "P:";
+					return GetIdString((PropertyInfo)memberInfo);
 				case MemberTypes.TypeInfo:
 				case MemberTypes.NestedType:
-					return "T:" + GetFullyQualifiedName((Type)memberInfo);
+					return GetIdString((Type)memberInfo);
 
 				default:
 					throw new ArgumentOutOfRangeException("memberInfo", "No known member prefix for given member info.");
 			}
+		}
+
+		public virtual string GetIdString(Type type)
+		{
+			return "T:" + GetFullyQualifiedName(type);
+		}
+
+		public virtual string GetIdString(FieldInfo info)
+		{
+			// Fields just return the fully qualified name.
+			return "F:" + GetFullyQualifiedName(info);
+		}
+
+		public virtual string GetIdString(PropertyInfo info)
+		{
+			// Get the fully qualified property name.
+			var baseName = GetFullyQualifiedName(info);
+
+			// Get the method arguments.  We look at the getter to see if there are parameters to the member (e.g. this
+			// is an indexer).
+			var parameters = GetMethodArguments(info.GetMethod);
+
+			// Return the combined string.
+			return "P:" + baseName + parameters;
+		}
+
+		public virtual string GetIdString(MethodInfo info)
+		{
+			// Get the fully qualified method name.
+			var baseName = GetFullyQualifiedName(info);
+
+			// Get the method arguments.
+			var parameters = GetMethodArguments(info);
+
+			// Return the combined string.
+			return "M:" + baseName + parameters;
+		}
+
+		public virtual string GetFullyQualifiedName(MemberInfo info)
+		{
+			// Prefix with the name of the declaring type.
+			return GetFullyQualifiedName(info.DeclaringType)
+				+ "." + EscapeName(info.Name);
+		}
+
+		public virtual string GetFullyQualifiedName(PropertyInfo info)
+		{
+			// Prefix with the name of the declaring type.  
+			return GetFullyQualifiedName(info.DeclaringType)
+				+ "." + EscapeName(info.Name);
+		}
+
+		public virtual string GetMethodArguments(MethodInfo info)
+		{
+			// Get the parameters.
+			var parameters = info.GetParameters();
+
+			// If there are no parameters we return an empty string.
+			if (parameters.Length == 0)
+				return String.Empty;
+
+			// Get the fully qualified name for each parameter.
+			var formattedParameters = parameters.Select(parameter => GetFullyQualifiedName(parameter.ParameterType));
+
+			// Return the parameter string.
+			return '(' + String.Join(",", formattedParameters) +')';
 		}
 
 		public virtual string GetFullyQualifiedName(Type type)
@@ -308,10 +401,27 @@ namespace XmlDocConverter.Fluent
 				? type.Namespace
 				: GetFullyQualifiedName(type.DeclaringType);
 
+			var typeName = EscapeName(type.Name);
+
+			// If this is a generic type with the generic arguments filled in then we need to replace each argument in
+			// the type name.
+			if (type.IsGenericType && !type.IsGenericTypeDefinition)
+			{
+				// Remove the number of arguments identifier (e.g. `1) from the end of the string.
+				var baseTypeName = typeName.Substring(0, typeName.IndexOf('`'));
+
+				// Build the type arguments.
+				var arguments = type.GetGenericArguments();
+				var formattedArguments = arguments.Select(arg => GetFullyQualifiedName(arg));
+
+				// Build the concrete type name.
+				typeName = baseTypeName + '{' + String.Join(",", formattedArguments) + '}';
+			}
+
 			if (prefix.Length > 0)
-				return prefix + "." + EscapeName(type.Name);
+				return prefix + "." + typeName;
 			else
-				return EscapeName(type.Name);
+				return typeName;
 		}
 
 		public virtual string EscapeName(string name)

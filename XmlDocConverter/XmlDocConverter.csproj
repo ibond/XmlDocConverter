@@ -57,14 +57,15 @@
     <Compile Include="Converter\Converter.cs" />
     <Compile Include="Fluent\Control\ContextSelector.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\AssemblyContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\Doc\DocElementContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\Doc\DocEntryContext.cs" />
     <Compile Include="Fluent\DocumentSource\XmlDocWriter.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\EncapsulatingTypeContext.cs" />
-    <Compile Include="Fluent\DocumentContext\DotNet\MethodContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\FieldContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\StructContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\TypeContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\MemberContext.cs" />
-    <Compile Include="Fluent\DocumentContext\DotNet\FieldContext.cs" />
+    <Compile Include="Fluent\DocumentContext\DotNet\MethodContext.cs" />
     <Compile Include="Fluent\DocumentContext\DotNet\ClassContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContext.cs" />
     <Compile Include="Fluent\DocumentContext\DocumentContextCollection.cs" />
@@ -80,6 +81,8 @@
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
     <Compile Include="Fluent\EmitContextCollection.cs" />
     <Compile Include="Fluent\ExtensionSupport\EmitContextExtensionSupport.cs" />
+    <Compile Include="Fluent\Render\Filter\IRenderFilter.cs" />
+    <Compile Include="Fluent\Render\Filter\RenderFilter.cs" />
     <Compile Include="Fluent\Writer\DocumentContextWriterExtensions.cs" />
     <Compile Include="Fluent\Writer\EmitTargetContext.cs" />
     <Compile Include="Fluent\Writer\Formatter\FormatterContext.cs" />

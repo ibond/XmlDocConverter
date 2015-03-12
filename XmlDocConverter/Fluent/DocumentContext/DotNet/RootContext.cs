@@ -43,9 +43,9 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for the root context.
 		/// </summary>
-		protected override Action<EmitWriterItem<RootContext>> GetDefaultWriter()
+		protected override Action<EmitWriterItem<RootContext>> GetDefaultRenderer()
 		{
-			return item => item.Emit.Select.Assemblies().Write();
+			return item => item.Emit.Select.Assemblies().Render();
 		}
 	}
 }

@@ -76,14 +76,14 @@ namespace XmlDocConverter.Fluent
 		/// <typeparam name="TParent">The type of the emit context parent.</typeparam>
 		/// <param name="context">The current context.</param>
 		/// <returns>An updated context.</returns>
-		public static TParent Write<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
+		public static TParent Render<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
 			where TDoc : DocumentContext<TDoc>
 			where TParent : EmitContext
 		{
 			// Get the writer function.
 			var writer = context.GetLocalData(
 				EmitWriter<TDoc>.DataKey,
-				context.GetDocumentContext().DefaultWriter);
+				context.GetDocumentContext().DefaultRenderer);
 
 			// Create a new output context for the results of this write and insert it in the current context.
 			var subContext = context.ReplaceOutputContext(new EmitOutputContext());

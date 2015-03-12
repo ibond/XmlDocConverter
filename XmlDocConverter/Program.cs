@@ -56,8 +56,8 @@ namespace XmlDocConverter
 		{
 			try
 			{
-				Converter.ConvertFromRazor(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\RazorTest.cshtml");
-				//Converter.ConvertFromScript(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\BasicScript.xdc.cs");
+				//Converter.ConvertFromRazor(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\RazorTest.cshtml");
+				Converter.ConvertFromScript(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\BasicScript.xdc.cs");
 
 				return ErrorCodes.Success;
 			}

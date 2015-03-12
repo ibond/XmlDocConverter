@@ -321,6 +321,14 @@ namespace XmlDocConverter.Fluent
 			}
 		}
 
+		public WriteSelector<TDoc, TParent> Write
+		{
+			get
+			{
+				return new WriteSelector<TDoc, TParent>(this);
+			}
+		}
+
 		// =====================================================================
 		#endregion
 

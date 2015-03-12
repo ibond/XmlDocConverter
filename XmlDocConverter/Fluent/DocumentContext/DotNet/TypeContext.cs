@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 using XmlDocConverter.Fluent.Detail;
+using System.Runtime.CompilerServices;
 
 namespace XmlDocConverter.Fluent
 {
@@ -35,7 +36,9 @@ namespace XmlDocConverter.Fluent
 		/// <returns>The fields in this class.</returns>
 		protected IEnumerable<FieldContext> GetFields(BindingFlags bindingFlags)
 		{
-			return m_type.GetFields(bindingFlags).Select(field => new FieldContext(DocumentSource, field));
+			return m_type.GetFields(bindingFlags)
+				.Where(field => Attribute.GetCustomAttribute(field, typeof(CompilerGeneratedAttribute)) == null)
+				.Select(field => new FieldContext(DocumentSource, field));
 		}
 
 		/// <summary>
@@ -44,7 +47,9 @@ namespace XmlDocConverter.Fluent
 		/// <returns>The properties in this class.</returns>
 		protected IEnumerable<PropertyContext> GetProperties(BindingFlags bindingFlags)
 		{
-			return m_type.GetProperties(bindingFlags).Select(property => new PropertyContext(DocumentSource, property));
+			return m_type.GetProperties(bindingFlags)
+				.Where(property => Attribute.GetCustomAttribute(property, typeof(CompilerGeneratedAttribute)) == null)
+				.Select(property => new PropertyContext(DocumentSource, property));
 		}
 
 		/// <summary>
@@ -53,7 +58,11 @@ namespace XmlDocConverter.Fluent
 		/// <returns>The methods in this class.</returns>
 		protected IEnumerable<MethodContext> GetMethods(BindingFlags bindingFlags)
 		{
-			return m_type.GetMethods(bindingFlags).Select(method => new MethodContext(DocumentSource, method));
+			// Ignore property getter and setter methods.
+			return m_type.GetMethods(bindingFlags)
+				.Where(method => Attribute.GetCustomAttribute(method, typeof(CompilerGeneratedAttribute)) == null)
+				.Where(method => !method.DeclaringType.GetProperties().Any(property => property.GetMethod == method || property.SetMethod == method))
+				.Select(method => new MethodContext(DocumentSource, method));
 		}
 
 		/// <summary>

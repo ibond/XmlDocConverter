@@ -11,9 +11,20 @@ using XmlDocConverter.Fluent.Detail;
 namespace XmlDocConverter.Fluent
 {
 	/// <summary>
+	/// Static MemberContext values separate from any particular type.
+	/// </summary>
+	public static class MemberContext
+	{
+		/// <summary>
+		/// The default set of binding flags when getting members.
+		/// </summary>
+		public const BindingFlags DefaultBindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
+	}
+
+	/// <summary>
 	/// A base context for .NET reflection info types.
 	/// </summary>
-	public abstract class MemberContext<TDerived, TInfo> : DotNetDocumentContext<TDerived>
+	public abstract class MemberContext<TDerived, TInfo> : DotNetDocumentContext<TDerived>, DocEntryContext.IProvider
 		where TDerived : MemberContext<TDerived, TInfo>
 		where TInfo : MemberInfo
 	{
@@ -28,6 +39,15 @@ namespace XmlDocConverter.Fluent
 			Contract.Ensures(m_info != null);
 
 			m_info = info;
+		}
+
+		/// <summary>
+		/// Get the documentation entry for this member.
+		/// </summary>
+		/// <returns>The doc entry for this member.</returns>
+		public DocEntryContext GetDocEntry()
+		{
+			return new DocEntryContext(DocumentSource, DocumentSource.TryGetEntry(m_info));
 		}
 
 		/// <summary>

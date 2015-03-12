@@ -43,7 +43,7 @@ namespace XmlDocConverter.Fluent
 		public static EmitContext<DocumentContextCollection<PropertyContext>, EmitContext<TDoc, TParent>>
 			Properties<TDoc, TParent>(
 				this IContextSelector<TDoc, TParent, PropertyContext.IProvider> selector,
-				BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
+				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{
@@ -63,7 +63,7 @@ namespace XmlDocConverter.Fluent
 		public static EmitContext<DocumentContextCollection<PropertyContext>, TParent>
 			Members<TDoc, TParent>(
 				this IContextSelector<TDoc, TParent, IDocumentContextCollection<PropertyContext.IProvider>> selector,
-				BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
+				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{

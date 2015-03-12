@@ -51,12 +51,12 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for a class.
 		/// </summary>
-		protected override Action<EmitWriterItem<TDerived>> GetDefaultWriter()
+		protected override Action<EmitWriterItem<TDerived>> GetDefaultRenderer()
 		{
 			return item => item.
-				Emit.Select.Properties().Write()
-					.Select.Methods().Write()
-					.Select.Fields().Write();
+				Emit.Select.Properties().Render()
+					.Select.Methods().Render()
+					.Select.Fields().Render();
 		}
 	}
 }

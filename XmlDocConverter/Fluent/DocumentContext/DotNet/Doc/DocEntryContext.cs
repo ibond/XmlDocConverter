@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using XmlDocConverter.Fluent.Detail;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
@@ -14,7 +15,7 @@ namespace XmlDocConverter.Fluent
 	/// <summary>
 	/// This is a context representing a documentation entry which contains documentation data.
 	/// </summary>
-	public class DocEntryContext : DotNetDocumentContext<DocEntryContext>
+	public class DocEntryContext : DotNetDocumentContext<DocEntryContext>, DocElementContext.IProvider
 	{
 		/// <summary>
 		/// Construct an DocEntryContext.
@@ -28,12 +29,17 @@ namespace XmlDocConverter.Fluent
 			m_entry = entry;
 		}
 
-		protected override Action<EmitWriterItem<DocEntryContext>> GetDefaultWriter()
+		protected override Action<EmitWriterItem<DocEntryContext>> GetDefaultRenderer()
 		{
 			return item =>
 				{
 					item.Emit.WriteXmlElement("summary");
 				};
+		}
+
+		public DocElementContext GetDocElement(string elementName)
+		{
+			return new DocElementContext(DocumentSource, Entry.GetElement(elementName));
 		}
 		
 		/// <summary>
@@ -84,7 +90,7 @@ namespace XmlDocConverter.Fluent
 		}
 
 
-		public static EmitContext<TDoc, TParent> Using<TDoc, TParent>(this EmitContext<TDoc, TParent> context, Func<XmlDocWriter> docWriter)
+		public static EmitContext<TDoc, TParent> Using<TDoc, TParent>(this EmitContext<TDoc, TParent> context, Func<IXmlDocWriter> docWriter)
 			where TDoc : DocumentContext<TDoc>
 			where TParent : EmitContext
 		{
@@ -109,8 +115,18 @@ namespace XmlDocConverter.Fluent
 			return context;
 		}
 
+		public static EmitContext<DocElementContext, TParent> WriteXmlElement<TParent>(this EmitContext<DocElementContext, TParent> context)
+			where TParent : EmitContext
+		{
+			Contract.Requires(context != null);
+			
+			context.CreateXmlDocWriter().Write(context.GetDocumentContext().Element, context.GetOutputContext());
 
-		public static XmlDocWriter CreateXmlDocWriter(this EmitContext context)
+			return context;
+		}
+
+
+		public static IXmlDocWriter CreateXmlDocWriter(this EmitContext context)
 		{
 			Contract.Requires(context != null);
 
@@ -119,6 +135,6 @@ namespace XmlDocConverter.Fluent
 
 		private static readonly object XmlDocWriterKey = new object();
 
-		private static readonly Func<XmlDocWriter> Default = () => new XmlDocWriter();
+		private static readonly Func<IXmlDocWriter> Default = () => new XmlDocWriter();
 	}
 }

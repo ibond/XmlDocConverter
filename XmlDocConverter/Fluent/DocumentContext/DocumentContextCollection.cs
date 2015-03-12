@@ -46,9 +46,9 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for a document context collection just writes each element.
 		/// </summary>
-		protected override Action<EmitWriterItem<DocumentContextCollection<TDoc>>> GetDefaultWriter()
+		protected override Action<EmitWriterItem<DocumentContextCollection<TDoc>>> GetDefaultRenderer()
 		{
-			return item => item.Emit.ForEach(element => element.Write());
+			return item => item.Emit.ForEach(element => element.Render());
 		}
 		
 		/// <summary>

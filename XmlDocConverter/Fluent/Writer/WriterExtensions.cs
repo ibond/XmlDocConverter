@@ -7,6 +7,28 @@ using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
 namespace XmlDocConverter.Fluent
 {
+	public struct WriteSelector<TDoc, TParent>
+		where TDoc : DocumentContext
+		where TParent : EmitContext
+	{
+		public WriteSelector(EmitContext<TDoc, TParent> context)
+		{
+			m_context = context;
+		}
+
+		public static EmitContext<TDoc, TParent> GetContext(WriteSelector<TDoc, TParent> selector)
+		{
+			return selector.m_context;
+		}
+
+		public static EmitOutputContext GetOutput(WriteSelector<TDoc, TParent> selector)
+		{
+			return selector.m_context.GetOutputContext();
+		}
+
+		private readonly EmitContext<TDoc, TParent> m_context;
+	}
+
 	/// <summary>
 	/// Extension methods to make using writers more fluent.
 	/// </summary>
@@ -23,6 +45,48 @@ namespace XmlDocConverter.Fluent
 			where TParent : EmitContext
 		{
 			return context.ReplaceFormatterContext(formatter);
+		}
+		
+
+		public static EmitContext<TDoc, TParent> L<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			WriteSelector<TDoc, TParent>.GetOutput(selector).WriteLine();
+			return WriteSelector<TDoc, TParent>.GetContext(selector);
+		}
+
+		public static EmitContext<TDoc, TParent> L<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector, string value)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			WriteSelector<TDoc, TParent>.GetOutput(selector).WriteLine(value);
+			return WriteSelector<TDoc, TParent>.GetContext(selector);
+		}
+
+		public static EmitContext<TDoc, TParent> L<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector, string value, params object[] args)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{			
+			WriteSelector<TDoc, TParent>.GetOutput(selector).WriteLine(string.Format(value, args));
+			return WriteSelector<TDoc, TParent>.GetContext(selector);
+		}
+
+
+		public static EmitContext<TDoc, TParent> A<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector, string value)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			WriteSelector<TDoc, TParent>.GetOutput(selector).Write(value);
+			return WriteSelector<TDoc, TParent>.GetContext(selector);
+		}
+
+		public static EmitContext<TDoc, TParent> A<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector, string value, params object[] args)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			WriteSelector<TDoc, TParent>.GetOutput(selector).Write(string.Format(value, args));
+			return WriteSelector<TDoc, TParent>.GetContext(selector);
 		}
 	}
 }

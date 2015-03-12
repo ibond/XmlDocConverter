@@ -10,48 +10,48 @@ using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
 namespace XmlDocConverter.Fluent
 {
-	public class MethodContext : MemberContext<MethodContext, MethodInfo>
+	public class FieldContext : MemberContext<FieldContext, FieldInfo>
 	{
-		public MethodContext(DocumentSource documentSource, MethodInfo info)
+		public FieldContext(DocumentSource documentSource, FieldInfo info)
 			: base(documentSource, info)
 		{
 		}
 
 		/// <summary>
-		/// The interface for an object that provides a method context.
+		/// The interface for an object that provides a field context.
 		/// </summary>
 		public interface IProvider
 		{
 			/// <summary>
-			/// Get all methods.
+			/// Get all fields.
 			/// </summary>
-			IEnumerable<MethodContext> GetMethods(BindingFlags bindingFlags);
+			IEnumerable<FieldContext> GetFields(BindingFlags bindingFlags);
 		}
 	}
 
 
 	/// <summary>
-	/// The context selector extensions for MethodContexts.
+	/// The context selector extensions for FieldContexts.
 	/// </summary>
-	public static class IMethodContextProviderExtensions
+	public static class IFieldContextProviderExtensions
 	{
 		/// <summary>
 		/// Select all of the members.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected member emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>
-			Methods<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, MethodContext.IProvider> selector,
-				BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
+		public static EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>
+			Fields<TDoc, TParent>(
+				this IContextSelector<TDoc, TParent, FieldContext.IProvider> selector,
+				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>>() != null);
 
 			return selector.EmitContext.ReplaceDocumentAndParentContext(
-					new DocumentContextCollection<MethodContext>(selector.DocumentContext.GetMethods(bindingFlags)),
+					new DocumentContextCollection<FieldContext>(selector.DocumentContext.GetFields(bindingFlags)),
 					selector.EmitContext);
 		}
 
@@ -60,18 +60,18 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<MethodContext>, TParent>
+		public static EmitContext<DocumentContextCollection<FieldContext>, TParent>
 			Members<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<MethodContext.IProvider>> selector,
-				BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
+				this IContextSelector<TDoc, TParent, IDocumentContextCollection<FieldContext.IProvider>> selector,
+				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
 			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>>() != null);
 
 			return selector.EmitContext.ReplaceDocumentContext(
-				new DocumentContextCollection<MethodContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetMethods(bindingFlags))));
+				new DocumentContextCollection<FieldContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetFields(bindingFlags))));
 		}
 	}
 }

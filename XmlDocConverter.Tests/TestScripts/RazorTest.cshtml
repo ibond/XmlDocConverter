@@ -15,8 +15,8 @@
 # Assembly: @item.Document.Name
 
 @{
-  item.Emit.Select.Structs().Write()
-    .Select.Classes().Write();
+  item.Emit.Select.Structs().Render()
+    .Select.Classes().Render();
 }
 </text>))
 
@@ -24,22 +24,22 @@
 @<text>
 ## Class: @item.Document.Name
 
-@item.Emit.Select.Doc().Write()
+@item.Emit.Select.Doc().Render()
 
 @{
   var properties = item.Emit.Select.Properties();
   if (properties.Any())
   {
     @:### Properties
-    properties.Write();
+    properties.Render();
   }
 }
 
 ### Methods
-@item.Emit.Select.Methods().Write()
+@item.Emit.Select.Methods().Render()
 
 ### Fields
-@item.Emit.Select.Fields().Write()
+@item.Emit.Select.Fields().Render()
 </text>))
 
        .Using(new EmitWriter<StructContext>(
@@ -47,13 +47,13 @@
 ## Struct: @item.Document.Name
 
 ### Properties
-@item.Emit.Select.Properties().Write()
+@item.Emit.Select.Properties().Render()
 
 ### Methods
-@item.Emit.Select.Methods().Write()
+@item.Emit.Select.Methods().Render()
 
 ### Fields
-@item.Emit.Select.Fields().Write()
+@item.Emit.Select.Fields().Render()
 </text>))
               
        .Using(new EmitWriter<FieldContext>(
@@ -68,6 +68,6 @@
         @:- Property: @item.Document.Name
         ))
 
-       .Write()
+       .Render()
        ;
 }
