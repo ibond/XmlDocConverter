@@ -79,65 +79,76 @@ Custom policies can be implemented by deriving from the ArugmentPolicy class.
 
 			.Using(new EmitWriter<ClassContext>(item => item.Emit
 				.SetLinkTarget(item.Document.FullName, "#" + item.Document.FullName)
-				.Write.L(@"### <a name=""{1}""></a>{0}", item.Document.Name, item.Document.FullName)
-				.Write.L()
+				.Write
+					.L(@"### <a name=""{1}""></a>{0}", item.Document.Name, item.Document.FullName)
+					.L()
 				.Select.Doc(doc => doc.Render())
-				.Write.L()
-				.Write.L()
+				.Write
+					.L()
+					.L()
 				.Select.Properties(properties => properties
 					.IfAny(emit => emit
-						.Write.L("#### Properties")
+						.Write
+							.L("#### Properties")
 						.Write.L()
-						.Write.L("Property | Summary")
-						.Write.L("-------- | -------")
+						.Write
+							.L("Property | Summary")
+							.L("-------- | -------")
 						.Render()
 						.Write.L()))
 				.Select.Methods(methods => methods
 					.IfAny(emit => emit
-						.Write.L("#### Methods")
-						.Write.L()
-						.Write.L("Method | Summary")
-						.Write.L("------ | -------")
+						.Write
+							.L("#### Methods")
+							.L()
+							.L("Method | Summary")
+							.L("------ | -------")
 						.Render()
 						.Write.L()))
 				.Select.Fields(fields => fields
 					.IfAny(emit => emit
-						.Write.L("#### Fields")
-						.Write.L()
-						.Write.L("Field | Summary")
-						.Write.L("----- | -------")
+						.Write
+							.L("#### Fields")
+							.L()
+							.L("Field | Summary")
+							.L("----- | -------")
 						.Render()
 						.Write.L()))
 			))
 
 			.Using(new EmitWriter<StructContext>(item => item.Emit
+				.SetLinkTarget(item.Document.FullName, "#" + item.Document.FullName)
 				.Write.L("### {0}", item.Document.Name)
-				.Write.L()
+					.L()
 				.Select.Doc(doc => doc.Render())
-				.Write.L()
-				.Write.L()
+				.Write
+					.L()
+					.L()
 				.Select.Properties(properties => properties
 					.IfAny(emit => emit
-						.Write.L("#### Properties")
-						.Write.L()
-						.Write.L("Property | Summary")
-						.Write.L("-------- | -------")
+						.Write
+							.L("#### Properties")
+							.L()
+							.L("Property | Summary")
+							.L("-------- | -------")
 						.Render()
 						.Write.L()))
 				.Select.Methods(methods => methods
 					.IfAny(emit => emit
-						.Write.L("#### Methods")
-						.Write.L()
-						.Write.L("Method | Summary")
-						.Write.L("------ | -------")
+						.Write
+							.L("#### Methods")
+							.L()
+							.L("Method | Summary")
+							.L("------ | -------")
 						.Render()
 						.Write.L()))
 				.Select.Fields(fields => fields
 					.IfAny(emit => emit
-						.Write.L("#### Fields")
-						.Write.L()
-						.Write.L("Field | Summary")
-						.Write.L("----- | -------")
+						.Write
+							.L("#### Fields")
+							.L()
+							.L("Field | Summary")
+							.L("----- | -------")
 						.Render()
 						.Write.L()))
 			))

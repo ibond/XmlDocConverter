@@ -12,6 +12,9 @@ using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 
 namespace XmlDocConverter.Fluent
 {
+	#region EmitContext
+	// =====================================================================
+
 	/// <summary>
 	/// This contains functionality not tied to a specific document context or parent context.
 	/// </summary>
@@ -168,7 +171,14 @@ namespace XmlDocConverter.Fluent
 		// =====================================================================
 		#endregion
 	}
-		
+
+	// =====================================================================
+	#endregion
+
+
+
+	#region EmitContext<TDoc>
+	// =====================================================================
 
 	/// <summary>
 	/// This type contains the necessary context for deciding what, where, and how to emit.  For the most part it is
@@ -292,11 +302,11 @@ namespace XmlDocConverter.Fluent
 			}
 		}
 
-		public WriteSelector<TDoc> Write
+		public EmitWriteContext<TDoc> Write
 		{
 			get
 			{
-				return new WriteSelector<TDoc>(this);
+				return new EmitWriteContext<TDoc>(m_documentContext, m_persistentDataMap, m_localDataMap, m_writerContext);
 			}
 		}
 
@@ -337,4 +347,7 @@ namespace XmlDocConverter.Fluent
 		// =====================================================================
 		#endregion
 	}	
+
+	// =====================================================================
+	#endregion
 }

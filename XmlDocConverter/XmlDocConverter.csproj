@@ -73,7 +73,7 @@
     <Compile Include="Fluent\DocumentSource\StandardDocumentSources.cs" />
     <Compile Include="Fluent\EmitContext.cs" />
     <Compile Include="EmitWriter\MarkdownEmitWriter.cs" />
-    <Compile Include="Fluent\EmitContextCollection.cs" />
+    <Compile Include="Fluent\EmitWriteContext.cs" />
     <Compile Include="Fluent\ExtensionSupport\EmitContextExtensionSupport.cs" />
     <Compile Include="Fluent\Render\Filter\IRenderFilter.cs" />
     <Compile Include="Fluent\Render\Filter\RenderFilter.cs" />
@@ -82,13 +82,11 @@
     <Compile Include="Fluent\Writer\Formatter\FormatterContext.cs" />
     <Compile Include="Fluent\Writer\Output\OutputContext.cs" />
     <Compile Include="Fluent\Writer\EmitWriterContext.cs" />
-    <Compile Include="Fluent\LazyEmitItem.cs" />
     <Compile Include="Fluent\Target\StandardTargets.cs" />
     <Compile Include="Fluent\Writer\WriterExtensions.cs" />
     <Compile Include="Fluent\Writer\Formatter\FormatterExtension.cs" />
     <Compile Include="Fluent\Writer\Output\OutputSource.cs" />
     <Compile Include="Fluent\Writer\Formatter\WriteHeader.cs" />
-    <Compile Include="Fluent\EmitItemGroup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script\Script.cs" />
