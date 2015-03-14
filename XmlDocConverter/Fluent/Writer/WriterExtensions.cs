@@ -88,5 +88,39 @@ namespace XmlDocConverter.Fluent
 			WriteSelector<TDoc, TParent>.GetOutput(selector).Write(string.Format(value, args));
 			return WriteSelector<TDoc, TParent>.GetContext(selector);
 		}
+
+
+		public static EmitContext<TDoc, TParent> Link<TDoc, TParent>(this WriteSelector<TDoc, TParent> selector, string targetKey, string contents)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+			var context = WriteSelector<TDoc, TParent>.GetContext(selector);
+			return context
+				.WithFilter(
+					new RenderFilter((string data) =>
+					{
+						object targetRef;
+						if (context.GetPersistentDataMap().TryGetValue(TargetKeyMap[targetKey], out targetRef))
+							return String.Format("[{0}]({1})", data, targetRef);
+						else
+							return data;
+					}),
+					emit => emit.Write.A(contents));
+		}
+
+
+		public static EmitContext<TDoc, TParent> SetLinkTarget<TDoc, TParent>(this EmitContext<TDoc, TParent> context, string targetKey, string targetRef)
+			where TDoc : DocumentContext
+			where TParent : EmitContext
+		{
+
+			var resultTarget = context.GetPersistentDataMap().GetOrAdd(TargetKeyMap[targetKey], targetRef);
+			if (resultTarget != (object)targetRef)
+				throw new Exception(String.Format("Link target has been set more than once.\n{0} -> \n\t{1}\n\t{2}", targetKey, resultTarget, targetRef));
+
+			return context;
+		}
+
+		private static Util.UniqueKeyMap<string> TargetKeyMap = new Util.UniqueKeyMap<string>();
 	}
 }

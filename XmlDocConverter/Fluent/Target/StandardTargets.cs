@@ -72,13 +72,10 @@ namespace XmlDocConverter.Fluent
 				Path.IsPathRooted(filePath) || String.IsNullOrWhiteSpace(baseDirectory)
 					? filePath
 					: Path.Combine(baseDirectory, filePath));
-
-			// Get the key for this file path.
-			var filePathKey = FilePathDataMapKeys.GetOrAdd(fullFilePath, s => new object());
-
+			
 			// Return the updated context.
 			return context.ReplaceTargetContext(
-				filePathKey,
+				FilePathDataMapKeys[fullFilePath],
 				() => new EmitTargetContext(
 					context.GetWriterContext().CreateNew(),
 					dataSources =>
@@ -114,10 +111,9 @@ namespace XmlDocConverter.Fluent
 		}
 		
 		/// <summary>
-		/// Create an object for each file path so we don't accidentally share DataMap keys with some other part of the
-		/// system.
+		/// Use a unique key map so we don't accidentally share DataMap keys with some other part of the system.
 		/// </summary>
-		private static ConcurrentDictionary<string, object> FilePathDataMapKeys = new ConcurrentDictionary<string, object>();
+		private static Util.UniqueKeyMap<string> FilePathDataMapKeys = new Util.UniqueKeyMap<string>();
 
 		/// <summary>
 		/// This object is used as a key into the emit context data map for storing the base directory.

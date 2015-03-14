@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -102,6 +103,7 @@
     <Compile Include="Script\ScriptCompilerException.cs" />
     <Compile Include="Script\ScriptCompilerOptions.cs" />
     <Compile Include="Script\ScriptRunContext.cs" />
+    <Compile Include="Util\UniqueKeyMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

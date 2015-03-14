@@ -329,6 +329,8 @@ namespace XmlDocConverter.Fluent
 			}
 		}
 
+		public TDoc Item { get { return m_documentContext; } }
+
 		// =====================================================================
 		#endregion
 

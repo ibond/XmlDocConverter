@@ -276,7 +276,7 @@ namespace XmlDocConverter.Fluent
 			switch (memberInfo.MemberType)
 			{
 				case MemberTypes.Event:
-					return "E:";
+					return GetIdString((EventInfo)memberInfo);
 				case MemberTypes.Field:
 					return GetIdString((FieldInfo)memberInfo);
 				case MemberTypes.Constructor:
@@ -296,6 +296,12 @@ namespace XmlDocConverter.Fluent
 		public virtual string GetIdString(Type type)
 		{
 			return "T:" + GetFullyQualifiedName(type);
+		}
+
+		public virtual string GetIdString(EventInfo info)
+		{
+			// Events just return the fully qualified name.
+			return "E:" + GetFullyQualifiedName(info);
 		}
 
 		public virtual string GetIdString(FieldInfo info)
@@ -325,8 +331,15 @@ namespace XmlDocConverter.Fluent
 			// Get the method arguments.
 			var parameters = GetMethodArguments(info);
 
+			// If this is a conversion operator we need to append the return type.
+			var suffix = "";
+			if (info.IsSpecialName && info.IsStatic && (info.Name == "op_Explicit" || info.Name == "op_Implicit"))
+			{
+				suffix = '~' + GetFullyQualifiedName(info.ReturnType);
+			}
+
 			// Return the combined string.
-			return "M:" + baseName + parameters;
+			return "M:" + baseName + parameters + suffix;
 		}
 
 		public virtual string GetFullyQualifiedName(MemberInfo info)
@@ -361,9 +374,33 @@ namespace XmlDocConverter.Fluent
 
 		public virtual string GetFullyQualifiedName(Type type)
 		{
+			// If this is a ref type we get it's element type and append an @ symbol.
+			if (type.IsByRef)
+				return GetFullyQualifiedName(type.GetElementType()) + '@';
+
+			// If this is an array type we need to explicitly append bounds.
+			if (type.IsArray)
+			{
+				// Get the name of the element type.
+				var elementTypeName = GetFullyQualifiedName(type.GetElementType());
+
+				// Get the rank of the array.
+				var arrayRank = type.GetArrayRank();
+
+				// A rank of 1 will just append an empty set of brackets, otherwise we must fill in the bounds.
+				// According to the docs each array dimension will indicate it's lower bound and size, however that's
+				// not information that's available at the type level and there doesn't seem to be any way to
+				// distinguish between array bounds without looking at IL.  Since we can't do anything about it we just
+				// use "0:".
+				return elementTypeName + (arrayRank == 1
+					? "[]"
+					: '[' + String.Join(",", Enumerable.Repeat("0:", arrayRank)) + ']');
+			}
+
+
 			// This starts with the namespace if we have no declaring type.
 			var prefix = type.DeclaringType == null
-				? type.Namespace
+				? (type.Namespace ?? String.Empty)
 				: GetFullyQualifiedName(type.DeclaringType);
 
 			var typeName = EscapeName(type.Name);

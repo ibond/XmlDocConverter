@@ -80,6 +80,11 @@ namespace XmlDocConverter.Fluent
 		public string Name { get { return m_type.Name; } }
 
 		/// <summary>
+		/// Gets the name of this type.
+		/// </summary>
+		public string FullName { get { return m_type.FullName; } }
+
+		/// <summary>
 		/// Gets the type info.
 		/// </summary>
 		public Type Type { get { return m_type; } }
