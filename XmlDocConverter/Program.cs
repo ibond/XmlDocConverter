@@ -1,6 +1,4 @@
-﻿using RazorEngine;
-using RazorEngine.Templating;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,7 +54,6 @@ namespace XmlDocConverter
 		{
 			try
 			{
-				//Converter.ConvertFromRazor(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\RazorTest.cshtml");
 				Converter.ConvertFromScript(@"C:\Work\XmlDocConverter\XmlDocConverter.Tests\TestScripts\BasicScript.xdc.cs");
 
 				return ErrorCodes.Success;

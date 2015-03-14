@@ -1,5 +1,4 @@
-﻿using RazorEngine.Templating;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -35,7 +34,7 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current emit context.</param>
 		/// <param name="doc">The document context to be written.</param>
 		/// <returns>An updated emit context.</returns>
-		public delegate TemplateWriter Writer(EmitWriterItem<TDoc> writerItem);
+		public delegate void Writer(EmitWriterItem<TDoc> writerItem);
 
 		/// <summary>
 		/// The key object for storing an emit writer in an emit context data map.
@@ -52,10 +51,10 @@ namespace XmlDocConverter.Fluent
 			WriterFunction = writer;
 		}
 
-		public EmitWriter(Action<EmitWriterItem<TDoc>> writer)
-		{			
-			WriterFunction = item => new TemplateWriter(dummyWriter => writer(item));
-		}
+		//public EmitWriter(Action<EmitWriterItem<TDoc>> writer)
+		//{			
+		//	WriterFunction = item => new TemplateWriter(dummyWriter => writer(item));
+		//}
 
 		/// <summary>
 		/// The emit writer function.
@@ -89,11 +88,8 @@ namespace XmlDocConverter.Fluent
 			var subContext = context.ReplaceOutputContext(new EmitOutputContext());
 
 			// The writer function will return a TemplateWriter object.
-			var templateWriter = writer(new EmitWriterItem<TDoc>(subContext));
+			writer(new EmitWriterItem<TDoc>(subContext));
 			
-			// Write to the subcontext's output context.
-			templateWriter.WriteTo(subContext.GetOutputContext());
-
 			// Append the results of the subcontext write.
 			context.GetOutputContext().Write(subContext.GetOutputContext());
 

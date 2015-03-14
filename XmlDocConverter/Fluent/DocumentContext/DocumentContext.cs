@@ -1,5 +1,4 @@
-﻿using RazorEngine.Templating;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -39,7 +38,7 @@ namespace XmlDocConverter.Fluent
 		{
 			get
 			{
-				return item => new TemplateWriter(dummyWriter => GetDefaultRenderer()(item));
+				return item => GetDefaultRenderer();
 			}
 		}
 	}

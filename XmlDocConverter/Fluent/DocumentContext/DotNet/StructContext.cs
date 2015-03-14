@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using XmlDocConverter.Fluent.EmitContextExtensionSupport;
 using XmlDocConverter.Fluent.Detail;
-using RazorEngine.Templating;
 
 namespace XmlDocConverter.Fluent
 {
