@@ -23,9 +23,8 @@ namespace XmlDocConverter.Fluent
 
 	public static class RenderFilterExtensions
 	{
-		public static EmitContext<TDoc, TParent> WithFilter<TDoc, TParent>(this EmitContext<TDoc, TParent> context, IRenderFilter filter, Action<EmitContext<TDoc, TParent>> action)
+		public static EmitContext<TDoc> WithFilter<TDoc>(this EmitContext<TDoc> context, IRenderFilter filter, Action<EmitContext<TDoc>> action)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(filter != null);

@@ -30,9 +30,8 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context where the value should be written.</param>
 		/// <param name="value">The value to be written.</param>
 		/// <returns>An updated emit context.</returns>
-		public EmitContext<TDoc, TParent> Write<TDoc, TParent>(EmitContext<TDoc, TParent> context, IOutputSource value)
+		public EmitContext<TDoc> Write<TDoc>(EmitContext<TDoc> context, IOutputSource value)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			return context.ReplaceWriterContext(Write(context.GetWriterContext(), value));
 		}

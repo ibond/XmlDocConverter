@@ -36,42 +36,46 @@ namespace XmlDocConverter.Fluent
 	public static class IFieldContextProviderExtensions
 	{
 		/// <summary>
-		/// Select all of the members.
+		/// Select all of the fields.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected member emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>
-			Fields<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, FieldContext.IProvider> selector,
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Fields<TDoc>(
+				this IContextSelector<TDoc, FieldContext.IProvider> selector,
+				Action<EmitContext<DocumentContextCollection<FieldContext>>> action,
 				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentAndParentContext(
-					new DocumentContextCollection<FieldContext>(selector.DocumentContext.GetFields(bindingFlags)),
-					selector.EmitContext);
+			action(selector.EmitContext
+				.ReplaceDocumentContext(new DocumentContextCollection<FieldContext>(selector.DocumentContext.GetFields(bindingFlags))));
+
+			return selector.EmitContext;
 		}
 
 		/// <summary>
-		/// Select all of the classes from a document context collection.
+		/// Select all of the fields from a document context collection.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<FieldContext>, TParent>
-			Members<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<FieldContext.IProvider>> selector,
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Fields<TDoc>(
+				this IContextSelector<TDoc, IDocumentContextCollection<FieldContext.IProvider>> selector,
+				Action<EmitContext<DocumentContextCollection<FieldContext>>> action,
 				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
-			where TDoc : DocumentContext
-			where TParent : EmitContext
+			where TDoc : DocumentContext<TDoc>
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<FieldContext>>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentContext(
-				new DocumentContextCollection<FieldContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetFields(bindingFlags))));
+			var col = new DocumentContextCollection<FieldContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetFields(bindingFlags)));
+
+			action(selector.EmitContext.ReplaceDocumentContext(col));
+
+			return selector.EmitContext;
 		}
 	}
 }

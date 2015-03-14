@@ -36,42 +36,46 @@ namespace XmlDocConverter.Fluent
 	public static class IMethodContextProviderExtensions
 	{
 		/// <summary>
-		/// Select all of the members.
+		/// Select all of the methods.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected member emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>
-			Methods<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, MethodContext.IProvider> selector,
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Methods<TDoc>(
+				this IContextSelector<TDoc, MethodContext.IProvider> selector,
+				Action<EmitContext<DocumentContextCollection<MethodContext>>> action,
 				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentAndParentContext(
-					new DocumentContextCollection<MethodContext>(selector.DocumentContext.GetMethods(bindingFlags)),
-					selector.EmitContext);
+			action(selector.EmitContext
+				.ReplaceDocumentContext(new DocumentContextCollection<MethodContext>(selector.DocumentContext.GetMethods(bindingFlags))));
+
+			return selector.EmitContext;
 		}
 
 		/// <summary>
-		/// Select all of the classes from a document context collection.
+		/// Select all of the methods from a document context collection.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<MethodContext>, TParent>
-			Members<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<MethodContext.IProvider>> selector,
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Methods<TDoc>(
+				this IContextSelector<TDoc, IDocumentContextCollection<MethodContext.IProvider>> selector,
+				Action<EmitContext<DocumentContextCollection<MethodContext>>> action,
 				BindingFlags bindingFlags = MemberContext.DefaultBindingFlags)
-			where TDoc : DocumentContext
-			where TParent : EmitContext
+			where TDoc : DocumentContext<TDoc>
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<MethodContext>>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentContext(
-				new DocumentContextCollection<MethodContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetMethods(bindingFlags))));
+			var col = new DocumentContextCollection<MethodContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetMethods(bindingFlags)));
+
+			action(selector.EmitContext.ReplaceDocumentContext(col));
+
+			return selector.EmitContext;
 		}
 	}
 }

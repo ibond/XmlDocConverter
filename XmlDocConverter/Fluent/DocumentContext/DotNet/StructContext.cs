@@ -45,41 +45,44 @@ namespace XmlDocConverter.Fluent
 	public static class IStructContextProviderExtensions
 	{
 		/// <summary>
-		/// Select all of the structes.
+		/// Select all of the structs.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected struct emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<StructContext>, EmitContext<TDoc, TParent>>
-			Structs<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, StructContext.IProvider> selector)
+		public static EmitContext<TDoc>
+			Structs<TDoc>(
+				this IContextSelector<TDoc, StructContext.IProvider> selector,
+				Action<EmitContext<DocumentContextCollection<StructContext>>> action)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<StructContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<StructContext>>>() != null);
+						
+			action(selector.EmitContext
+				.ReplaceDocumentContext(new DocumentContextCollection<StructContext>(selector.DocumentContext.GetStructs())));
 
-			return selector.EmitContext
-				.ReplaceParentContext(selector.EmitContext)
-				.ReplaceDocumentContext(new DocumentContextCollection<StructContext>(selector.DocumentContext.GetStructs()));
+			return selector.EmitContext;
 		}
 
 		/// <summary>
-		/// Select all of the structes from a document context collection.
+		/// Select all of the structs from a document context collection.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected struct emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<StructContext>, TParent>
-			Structs<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<StructContext.IProvider>> selector)
-			where TDoc : DocumentContext
-			where TParent : EmitContext
+		public static EmitContext<TDoc>
+			Structs<TDoc>(
+				this IContextSelector<TDoc, IDocumentContextCollection<StructContext.IProvider>> selector,
+				Action<EmitContext<DocumentContextCollection<StructContext>>> action)
+			where TDoc : DocumentContext<TDoc>
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<StructContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<StructContext>>>() != null);
 
 			var col = new DocumentContextCollection<StructContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetStructs()));
-			return selector.EmitContext
-				.ReplaceDocumentContext(col);
+
+			action(selector.EmitContext.ReplaceDocumentContext(col));
+
+			return selector.EmitContext;
 		}
 	}
 }

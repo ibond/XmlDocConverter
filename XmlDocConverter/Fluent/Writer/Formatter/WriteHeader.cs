@@ -31,23 +31,20 @@ namespace XmlDocConverter.Fluent
 	{
 		public static readonly HeaderFormatter Default = new HeaderFormatter(1);
 
-		public static EmitContext<TDoc, TParent> WriteHeader<TDoc, TParent>(this EmitContext<TDoc, TParent> context, IOutputSource source)
+		public static EmitContext<TDoc> WriteHeader<TDoc>(this EmitContext<TDoc> context, IOutputSource source)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			return context.GetWriterContext().FormatterContext.GetFormatterExtension(Default).Write(context, source);
 		}
 
-		public static EmitContext<TDoc, TParent> IndentHeader<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
+		public static EmitContext<TDoc> IndentHeader<TDoc>(this EmitContext<TDoc> context)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			return context.UpdateFormatterExtension(Default, f => new HeaderFormatter(f.HeaderLevel + 1));
 		}
 
-		public static EmitContext<TDoc, TParent> DedentHeader<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
+		public static EmitContext<TDoc> DedentHeader<TDoc>(this EmitContext<TDoc> context)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			return context.UpdateFormatterExtension(Default, f => new HeaderFormatter(f.HeaderLevel - 1));
 		}

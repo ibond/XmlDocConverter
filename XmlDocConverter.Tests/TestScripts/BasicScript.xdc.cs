@@ -58,11 +58,11 @@ the arguments will automatically be converted.
 A set of standard argument policies are provided with this library:
 ")			
 			// Write the list of argument policy classes.
-			.Select.Classes().ForEach(emit => 
+			.Select.Classes(classes => classes.ForEach(emit => 
 				{
 					if (emit.Item.Type.IsSubclassOf(typeof(ProcessArgumentTools.Policy.ArgumentPolicy)))
 						emit.Write.A("- ").Write.Link(emit.Item.FullName, emit.Item.Name).Write.L();
-				})
+				}))
 			.Write.A(
 @"
 
@@ -73,99 +73,96 @@ Custom policies can be implemented by deriving from the ArugmentPolicy class.
 ")
 
 			.Using(new EmitWriter<AssemblyContext>(item => item.Emit
-				.Select.Structs().Render()
-				.Select.Classes().Render()
+				.Select.Structs(structs => structs.Render())
+				.Select.Classes(classes => classes.Render())
 			))
 
 			.Using(new EmitWriter<ClassContext>(item => item.Emit
 				.SetLinkTarget(item.Document.FullName, "#" + item.Document.FullName)
 				.Write.L(@"### <a name=""{1}""></a>{0}", item.Document.Name, item.Document.FullName)
 				.Write.L()
-				.Select.Doc().Render()
+				.Select.Doc(doc => doc.Render())
 				.Write.L()
 				.Write.L()
-				.Select.Properties().IfAny(emit => emit
-					.Write.L("#### Properties")
-					.Write.L()
-					.Write.L("Property | Summary")
-					.Write.L("-------- | -------")
-					.Render()
-					.Write.L())
-					.Break()
-				.Select.Methods().IfAny(emit => emit
-					.Write.L("#### Methods")
-					.Write.L()
-					.Write.L("Method | Summary")
-					.Write.L("------ | -------")
-					.Render()
-					.Write.L())
-					.Break()
-				.Select.Fields().IfAny(emit => emit
-					.Write.L("#### Fields")
-					.Write.L()
-					.Write.L("Field | Summary")
-					.Write.L("----- | -------")
-					.Render()
-					.Write.L())
-					.Break()
+				.Select.Properties(properties => properties
+					.IfAny(emit => emit
+						.Write.L("#### Properties")
+						.Write.L()
+						.Write.L("Property | Summary")
+						.Write.L("-------- | -------")
+						.Render()
+						.Write.L()))
+				.Select.Methods(methods => methods
+					.IfAny(emit => emit
+						.Write.L("#### Methods")
+						.Write.L()
+						.Write.L("Method | Summary")
+						.Write.L("------ | -------")
+						.Render()
+						.Write.L()))
+				.Select.Fields(fields => fields
+					.IfAny(emit => emit
+						.Write.L("#### Fields")
+						.Write.L()
+						.Write.L("Field | Summary")
+						.Write.L("----- | -------")
+						.Render()
+						.Write.L()))
 			))
 
 			.Using(new EmitWriter<StructContext>(item => item.Emit
 				.Write.L("### {0}", item.Document.Name)
 				.Write.L()
-				.Select.Doc().Render()
+				.Select.Doc(doc => doc.Render())
 				.Write.L()
 				.Write.L()
-				.Select.Properties().IfAny(emit => emit
-					.Write.L("#### Properties")
-					.Write.L()
-					.Write.L("Property | Summary")
-					.Write.L("-------- | -------")
-					.Render()
-					.Write.L())
-					.Break()
-				.Select.Methods().IfAny(emit => emit
-					.Write.L("#### Methods")
-					.Write.L()
-					.Write.L("Method | Summary")
-					.Write.L("------ | -------")
-					.Render()
-					.Write.L())
-					.Break()
-				.Select.Fields().IfAny(emit => emit
-					.Write.L("#### Fields")
-					.Write.L()
-					.Write.L("Field | Summary")
-					.Write.L("----- | -------")
-					.Render()
-					.Write.L())
-					.Break()
+				.Select.Properties(properties => properties
+					.IfAny(emit => emit
+						.Write.L("#### Properties")
+						.Write.L()
+						.Write.L("Property | Summary")
+						.Write.L("-------- | -------")
+						.Render()
+						.Write.L()))
+				.Select.Methods(methods => methods
+					.IfAny(emit => emit
+						.Write.L("#### Methods")
+						.Write.L()
+						.Write.L("Method | Summary")
+						.Write.L("------ | -------")
+						.Render()
+						.Write.L()))
+				.Select.Fields(fields => fields
+					.IfAny(emit => emit
+						.Write.L("#### Fields")
+						.Write.L()
+						.Write.L("Field | Summary")
+						.Write.L("----- | -------")
+						.Render()
+						.Write.L()))
 			))
 
 			.Using(new EmitWriter<FieldContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
 				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
-					e2 => e2.Select.Doc().Select.Element("summary").Render())
+					e2 => e2.Select.Doc(doc => doc.Select.Element(element => element.Render(), "summary")))
 				.Write.L()
 			))
 
 			.Using(new EmitWriter<MethodContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
 				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
-					e2 => e2.Select.Doc().Select.Element("summary").Render())
+					e2 => e2.Select.Doc(doc => doc.Select.Element(element => element.Render(), "summary")))
 				.Write.L()
 			))
 
 			.Using(new EmitWriter<PropertyContext>(item => item.Emit
 				.Write.A("{0} | ", item.Document.Name)
 				.WithFilter(RenderFilter.CollapseNewlines.Then(RenderFilter.RegexReplace("\n", "<br>")),
-					e2 => e2.Select.Doc().Select.Element("summary").Render())
+					e2 => e2.Select.Doc(doc => doc.Select.Element(element => element.Render(), "summary")))
 				.Write.L()
 			))
 
 			.Render();
-				
-
-			;
 	}
 }

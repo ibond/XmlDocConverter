@@ -12,14 +12,13 @@ namespace XmlDocConverter.Fluent.Detail
 	/// An interface to the context selector.  This allows us to be covariant on the document context type.
 	/// </summary>
 	/// <typeparam name="TDoc">The type of the document context.  This may be an interface implemented by a document context as well.</typeparam>
-	public interface IContextSelector<EmitDocumentContextType, TParent, out TDoc>
+	public interface IContextSelector<EmitDocumentContextType, out TDoc>
 		where EmitDocumentContextType : DocumentContext
-		where TParent : EmitContext
 	{
 		/// <summary>
 		/// Gets the EmitContext for this context selector.
 		/// </summary>
-		EmitContext<EmitDocumentContextType, TParent> EmitContext { get; }
+		EmitContext<EmitDocumentContextType> EmitContext { get; }
 
 		/// <summary>
 		/// Gets the document context for this context selector.
@@ -30,15 +29,14 @@ namespace XmlDocConverter.Fluent.Detail
 	/// <summary>
 	/// This is a utility class that allows us to use the .Select.Assemblies syntax.
 	/// </summary>
-	public class ContextSelector<TDoc, TParent> : IContextSelector<TDoc, TParent, TDoc>
+	public class ContextSelector<TDoc> : IContextSelector<TDoc, TDoc>
 		where TDoc : DocumentContext
-		where TParent : EmitContext
 	{
 		/// <summary>
 		/// Construct a context selector.
 		/// </summary>
 		/// <param name="emitContext">The emit context.</param>
-		public ContextSelector(EmitContext<TDoc, TParent> emitContext)
+		public ContextSelector(EmitContext<TDoc> emitContext)
 		{
 			Contract.Requires(emitContext != null);
 			Contract.Ensures(m_emitContext != null);
@@ -49,7 +47,7 @@ namespace XmlDocConverter.Fluent.Detail
 		/// <summary>
 		/// Get the emit context.
 		/// </summary>
-		public EmitContext<TDoc, TParent> EmitContext { get { return m_emitContext; } }
+		public EmitContext<TDoc> EmitContext { get { return m_emitContext; } }
 
 		/// <summary>
 		/// Get the document context.
@@ -59,6 +57,6 @@ namespace XmlDocConverter.Fluent.Detail
 		/// <summary>
 		/// The emit context.
 		/// </summary>
-		private readonly EmitContext<TDoc, TParent> m_emitContext;
+		private readonly EmitContext<TDoc> m_emitContext;
 	}
 }

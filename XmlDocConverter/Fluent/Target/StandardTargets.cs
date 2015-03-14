@@ -24,13 +24,12 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="textWriter">The TextWriter to act as the target.</param>
 		/// <returns>An updated emit context with the target set to this TextWriter.</returns>
-		public static EmitContext<TDoc, TParent> ToTextWriter<TDoc, TParent>(this EmitContext<TDoc, TParent> context, TextWriter textWriter)
+		public static EmitContext<TDoc> ToTextWriter<TDoc>(this EmitContext<TDoc> context, TextWriter textWriter)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(textWriter != null);
-			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<TDoc>>() != null);
 						
 			// Replace the target context
 			return context.ReplaceTargetContext(
@@ -53,13 +52,12 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The emit context.</param>
 		/// <param name="filePath">The path to the file.</param>
 		/// <returns>An updated emit context with the target set to this file.</returns>
-		public static EmitContext<TDoc, TParent> ToFile<TDoc, TParent>(this EmitContext<TDoc, TParent> context, string filePath)
+		public static EmitContext<TDoc> ToFile<TDoc>(this EmitContext<TDoc> context, string filePath)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(!String.IsNullOrWhiteSpace(filePath));
-			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<TDoc>>() != null);
 
 			// Get the base directory.
 			object baseDirectoryObject;
@@ -98,13 +96,12 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="directoryPath">The path to the base directory.</param>
 		/// <returns>A new context with the updated base directory.</returns>
-		public static EmitContext<TDoc, TParent> InDirectory<TDoc, TParent>(this EmitContext<TDoc, TParent> context, string directoryPath)
+		public static EmitContext<TDoc> InDirectory<TDoc>(this EmitContext<TDoc> context, string directoryPath)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(!String.IsNullOrWhiteSpace(directoryPath));
-			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<TDoc>>() != null);
 
 			// Set the base directory.
 			return context.UpdateLocalDataMap(map => map.SetItem(BaseDirectoryDataMapKey, directoryPath));
@@ -126,13 +123,12 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="stringBuilderTarget">The string builder that will accept the emitted text.</param>
 		/// <returns>An updated emit context with the target set to this StringBuilder.</returns>
-		public static EmitContext<TDoc, TParent> ToTextWriter<TDoc, TParent>(this EmitContext<TDoc, TParent> context, StringBuilder stringBuilderTarget)
+		public static EmitContext<TDoc> ToTextWriter<TDoc>(this EmitContext<TDoc> context, StringBuilder stringBuilderTarget)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(stringBuilderTarget != null);
-			Contract.Requires(Contract.Result<EmitContext<TDoc, TParent>>() != null);
+			Contract.Requires(Contract.Result<EmitContext<TDoc>>() != null);
 
 			// Replace the target context
 			return context.ReplaceTargetContext(

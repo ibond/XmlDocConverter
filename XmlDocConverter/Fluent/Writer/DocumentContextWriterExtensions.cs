@@ -75,9 +75,8 @@ namespace XmlDocConverter.Fluent
 		/// <typeparam name="TParent">The type of the emit context parent.</typeparam>
 		/// <param name="context">The current context.</param>
 		/// <returns>An updated context.</returns>
-		public static TParent Render<TDoc, TParent>(this EmitContext<TDoc, TParent> context)
+		public static EmitContext<TDoc> Render<TDoc>(this EmitContext<TDoc> context)
 			where TDoc : DocumentContext<TDoc>
-			where TParent : EmitContext
 		{
 			// Get the writer function.
 			var writer = context.GetLocalData(
@@ -94,7 +93,7 @@ namespace XmlDocConverter.Fluent
 			context.GetOutputContext().Write(subContext.GetOutputContext());
 
 			// Return the parent context.
-			return context.GetParentContext();
+			return context;
 		}
 
 
@@ -107,9 +106,8 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current context.</param>
 		/// <param name="writer">The new document context writer.  If this is null the default writer will be restored.</param>
 		/// <returns>An updated context.</returns>
-		public static EmitContext<TDoc, TParent> Using<TDoc, TParent, TUsingDoc>(this EmitContext<TDoc, TParent> context, EmitWriter<TUsingDoc>.Writer writer)
+		public static EmitContext<TDoc> Using<TDoc, TUsingDoc>(this EmitContext<TDoc> context, EmitWriter<TUsingDoc>.Writer writer)
 			where TDoc : DocumentContext<TDoc>
-			where TParent : EmitContext
 			where TUsingDoc : DocumentContext<TUsingDoc>
 		{
 			Contract.Requires(context != null);
@@ -132,12 +130,11 @@ namespace XmlDocConverter.Fluent
 		/// <param name="context">The current context.</param>
 		/// <param name="writer">The new document context writer object.</param>
 		/// <returns>An updated context.</returns>
-		public static EmitContext<TDoc, TParent>
-			Using<TDoc, TParent, TUsingDoc>(
-				this EmitContext<TDoc, TParent> context,
+		public static EmitContext<TDoc>
+			Using<TDoc, TUsingDoc>(
+				this EmitContext<TDoc> context,
 				EmitWriter<TUsingDoc> writer)
 			where TDoc : DocumentContext<TDoc>
-			where TParent : EmitContext
 			where TUsingDoc : DocumentContext<TUsingDoc>
 		{
 			// Extract the writer function.

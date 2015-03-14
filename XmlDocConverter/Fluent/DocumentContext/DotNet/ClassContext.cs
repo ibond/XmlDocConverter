@@ -49,38 +49,41 @@ namespace XmlDocConverter.Fluent
 		/// Select all of the classes.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<ClassContext>, EmitContext<TDoc, TParent>>
-			Classes<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, ClassContext.IProvider> selector)
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Classes<TDoc>(
+				this IContextSelector<TDoc, ClassContext.IProvider> selector,
+				Action<EmitContext<DocumentContextCollection<ClassContext>>> action)
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<ClassContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<ClassContext>>>() != null);
 
-			return selector.EmitContext
-				.ReplaceParentContext(selector.EmitContext)
-				.ReplaceDocumentContext(new DocumentContextCollection<ClassContext>(selector.DocumentContext.GetClasses()));
+			action(selector.EmitContext
+				.ReplaceDocumentContext(new DocumentContextCollection<ClassContext>(selector.DocumentContext.GetClasses())));
+
+			return selector.EmitContext;
 		}
 
 		/// <summary>
 		/// Select all of the classes from a document context collection.
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
-		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocumentContextCollection<ClassContext>, TParent>
-			Classes<TDoc, TParent>(
-				this IContextSelector<TDoc, TParent, IDocumentContextCollection<ClassContext.IProvider>> selector)
-			where TDoc : DocumentContext
-			where TParent : EmitContext
+		/// <returns>The selected struct emit contexts.</returns>
+		public static EmitContext<TDoc>
+			Classes<TDoc>(
+				this IContextSelector<TDoc, IDocumentContextCollection<ClassContext.IProvider>> selector,
+				Action<EmitContext<DocumentContextCollection<ClassContext>>> action)
+			where TDoc : DocumentContext<TDoc>
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<ClassContext>, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocumentContextCollection<ClassContext>>>() != null);
 
 			var col = new DocumentContextCollection<ClassContext>(selector.DocumentContext.Elements.SelectMany(element => element.GetClasses()));
-			return selector.EmitContext
-				.ReplaceDocumentContext(col);
+
+			action(selector.EmitContext.ReplaceDocumentContext(col));
+
+			return selector.EmitContext;
 		}
 	}
 }

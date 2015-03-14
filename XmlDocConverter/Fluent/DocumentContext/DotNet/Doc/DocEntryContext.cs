@@ -28,7 +28,7 @@ namespace XmlDocConverter.Fluent
 			m_entry = entry;
 		}
 
-		protected override Action<EmitWriterItem<DocEntryContext>> GetDefaultRenderer()
+		protected override EmitWriter<DocEntryContext>.Writer GetDefaultRenderer()
 		{
 			return item =>
 				{
@@ -73,25 +73,26 @@ namespace XmlDocConverter.Fluent
 		/// </summary>
 		/// <param name="selector">The context selector object returned from EmitContext.Select.</param>
 		/// <returns>The selected class emit contexts.</returns>
-		public static EmitContext<DocEntryContext, EmitContext<TDoc, TParent>>
+		public static EmitContext<TDoc>
 
-			Doc<TDoc, TParent>(this IContextSelector<TDoc, TParent, DocEntryContext.IProvider> selector)
+			Doc<TDoc>(
+				this IContextSelector<TDoc, DocEntryContext.IProvider> selector,
+				Action<EmitContext<DocEntryContext>> action)
 
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocEntryContext, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocEntryContext>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentAndParentContext(
-				selector.DocumentContext.GetDocEntry(),
-				selector.EmitContext);
+			action(selector.EmitContext
+				.ReplaceDocumentContext(selector.DocumentContext.GetDocEntry()));
+
+			return selector.EmitContext;
 		}
 
 
-		public static EmitContext<TDoc, TParent> Using<TDoc, TParent>(this EmitContext<TDoc, TParent> context, Func<IXmlDocWriter> docWriter)
+		public static EmitContext<TDoc> Using<TDoc>(this EmitContext<TDoc> context, Func<IXmlDocWriter> docWriter)
 			where TDoc : DocumentContext<TDoc>
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(docWriter != null);
@@ -103,8 +104,7 @@ namespace XmlDocConverter.Fluent
 				: context.UpdateLocalDataMap(map => map.Remove(XmlDocWriterKey));
 		}
 
-		public static EmitContext<DocEntryContext, TParent> WriteXmlElement<TParent>(this EmitContext<DocEntryContext, TParent> context, string elementName)
-			where TParent : EmitContext
+		public static EmitContext<DocEntryContext> WriteXmlElement(this EmitContext<DocEntryContext> context, string elementName)
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(elementName != null);
@@ -114,8 +114,7 @@ namespace XmlDocConverter.Fluent
 			return context;
 		}
 
-		public static EmitContext<DocElementContext, TParent> WriteXmlElement<TParent>(this EmitContext<DocElementContext, TParent> context)
-			where TParent : EmitContext
+		public static EmitContext<DocElementContext> WriteXmlElement(this EmitContext<DocElementContext> context)
 		{
 			Contract.Requires(context != null);
 			

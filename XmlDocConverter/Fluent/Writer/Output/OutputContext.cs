@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace XmlDocConverter.Fluent
@@ -35,6 +36,11 @@ namespace XmlDocConverter.Fluent
 		public override void Write(char value)
 		{
 			Write(new StringOutputSource(value.ToString()));
+		}
+
+		public override void Write(string value)
+		{
+			Write(new StringOutputSource(Regex.Replace(value, "\r\n|\r|\n", "\n")));
 		}
 
 		public void Write(IOutputSource source)

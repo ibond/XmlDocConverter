@@ -45,7 +45,7 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// The default writer for a document context collection just writes each element.
 		/// </summary>
-		protected override Action<EmitWriterItem<DocumentContextCollection<TDoc>>> GetDefaultRenderer()
+		protected override EmitWriter<DocumentContextCollection<TDoc>>.Writer GetDefaultRenderer()
 		{
 			return item => item.Emit.ForEach(element => element.Render());
 		}
@@ -63,9 +63,8 @@ namespace XmlDocConverter.Fluent
 
 	public static class DocumentContextCollectionExtensions
 	{
-		public static bool Any<TDocElement, TParent>(this EmitContext<DocumentContextCollection<TDocElement>, TParent> context)
+		public static bool Any<TDocElement>(this EmitContext<DocumentContextCollection<TDocElement>> context)
 			where TDocElement : DocumentContext<TDocElement>
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 
@@ -73,13 +72,12 @@ namespace XmlDocConverter.Fluent
 		}
 
 
-		public static EmitContext<DocumentContextCollection<TDocElement>, TParent>
-			IfAny<TDocElement, TParent>(
-				this EmitContext<DocumentContextCollection<TDocElement>, TParent> context, 
-				Action<EmitContext<DocumentContextCollection<TDocElement>, TParent>> action)
+		public static EmitContext<DocumentContextCollection<TDocElement>>
+			IfAny<TDocElement>(
+				this EmitContext<DocumentContextCollection<TDocElement>> context, 
+				Action<EmitContext<DocumentContextCollection<TDocElement>>> action)
 			
 			where TDocElement : DocumentContext<TDocElement>
-			where TParent : EmitContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(action != null);

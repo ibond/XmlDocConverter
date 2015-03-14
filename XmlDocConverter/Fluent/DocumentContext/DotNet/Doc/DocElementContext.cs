@@ -28,7 +28,7 @@ namespace XmlDocConverter.Fluent
 			m_element = element;
 		}
 
-		protected override Action<EmitWriterItem<DocElementContext>> GetDefaultRenderer()
+		protected override EmitWriter<DocElementContext>.Writer GetDefaultRenderer()
 		{
 			return item =>
 				{
@@ -63,19 +63,22 @@ namespace XmlDocConverter.Fluent
 	/// </summary>
 	public static class DocElementContextProviderExtensions
 	{
-		public static EmitContext<DocElementContext, EmitContext<TDoc, TParent>>
+		public static EmitContext<TDoc>
 
-			Element<TDoc, TParent>(this IContextSelector<TDoc, TParent, DocElementContext.IProvider> selector, string elementName)
+			Element<TDoc>(
+				this IContextSelector<TDoc, DocElementContext.IProvider> selector,
+				Action<EmitContext<DocElementContext>> action, 
+				string elementName)
 
 			where TDoc : DocumentContext
-			where TParent : EmitContext
 		{
 			Contract.Requires(selector != null);
-			Contract.Ensures(Contract.Result<EmitContext<DocElementContext, EmitContext<TDoc, TParent>>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<DocElementContext>>() != null);
 
-			return selector.EmitContext.ReplaceDocumentAndParentContext(
-				selector.DocumentContext.GetDocElement(elementName),
-				selector.EmitContext);
+			action(selector.EmitContext
+				.ReplaceDocumentContext(selector.DocumentContext.GetDocElement(elementName)));
+
+			return selector.EmitContext;
 		}
 	}
 }

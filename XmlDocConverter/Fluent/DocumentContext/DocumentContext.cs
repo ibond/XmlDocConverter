@@ -26,7 +26,7 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// Get the default writer for this document context.
 		/// </summary>
-		protected virtual Action<EmitWriterItem<TDerived>> GetDefaultRenderer()
+		protected virtual EmitWriter<TDerived>.Writer GetDefaultRenderer()
 		{
 			return item => { };
 		}
@@ -38,7 +38,7 @@ namespace XmlDocConverter.Fluent
 		{
 			get
 			{
-				return item => GetDefaultRenderer();
+				return GetDefaultRenderer();
 			}
 		}
 	}
