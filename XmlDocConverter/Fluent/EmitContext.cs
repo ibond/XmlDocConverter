@@ -50,7 +50,7 @@ namespace XmlDocConverter.Fluent
 		/// Create a new root emit context.
 		/// </summary>
 		/// <returns>A new emit context with default values.</returns>
-		public static EmitContextRoot<RootContext> CreateRoot()
+		public static EmitContext<RootContext> CreateRoot()
 		{
 			return CreateRoot(
 				new RootContext(new DocumentSource(Enumerable.Empty<XmlDocPathPair>())),
@@ -63,7 +63,7 @@ namespace XmlDocConverter.Fluent
 		/// Create a new root emit context based on an existing context.
 		/// </summary>
 		/// <returns>A new emit context with default values.</returns>
-		public static EmitContextRoot<TDoc> CreateRoot<TDoc>(EmitContext<TDoc> emitContext)
+		public static EmitContext<TDoc> CreateRoot<TDoc>(EmitContext<TDoc> emitContext)
 			where TDoc : DocumentContext
 		{
 			return CreateRoot(
@@ -77,14 +77,14 @@ namespace XmlDocConverter.Fluent
 		/// Create a new root emit context.
 		/// </summary>
 		/// <returns>A new emit context with the specified values.</returns>
-		public static EmitContextRoot<TDoc> CreateRoot<TDoc>(
+		public static EmitContext<TDoc> CreateRoot<TDoc>(
 			TDoc documentContext, 
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
 			EmitWriterContext writerContext)
 			where TDoc : DocumentContext
 		{
-			return new EmitContextRoot<TDoc>(documentContext, persistentDataMap, localDataMap, writerContext);
+			return new EmitContext<TDoc>(documentContext, persistentDataMap, localDataMap, writerContext);
 		}
 		
 		// =====================================================================
@@ -191,7 +191,7 @@ namespace XmlDocConverter.Fluent
 		/// <param name="persistentDataMap">The persistent data map.</param>
 		/// <param name="localDataMap">The local data map.</param>
 		/// <param name="writerContext">The writer context.</param>
-		protected EmitContext(
+		internal EmitContext(
 			TDoc documentContext,
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
@@ -336,27 +336,5 @@ namespace XmlDocConverter.Fluent
 
 		// =====================================================================
 		#endregion
-	}
-	
-	
-	/// <summary>
-	/// This is a special type of the EmitContext for representing the top level of an emit context chain.
-	/// </summary>
-	/// <typeparam name="TDoc">The document context type.</typeparam>
-	public class EmitContextRoot<TDoc> : EmitContext<TDoc>
-		where TDoc : DocumentContext
-	{
-		internal EmitContextRoot(
-			TDoc documentContext,
-			ConcurrentDictionary<object, object> persistentDataMap,
-			ImmutableDictionary<object, object> localDataMap,
-			EmitWriterContext writerContext)
-			: base(
-				documentContext,
-				persistentDataMap,
-				localDataMap,
-				writerContext)
-		{
-		}
-	}
+	}	
 }

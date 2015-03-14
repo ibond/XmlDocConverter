@@ -19,7 +19,7 @@ namespace XmlDocConverter
 		/// <summary>
 		/// This begins the emit process using the initial emit context specified by the script context.
 		/// </summary>
-		public static EmitContextRoot<RootContext> Begin
+		public static EmitContext<RootContext> Begin
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace XmlDocConverter
 		/// <summary>
 		/// This begins the emit process using a clean emit context.
 		/// </summary>
-		public static EmitContextRoot<RootContext> BeginClean
+		public static EmitContext<RootContext> BeginClean
 		{
 			get
 			{
