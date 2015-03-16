@@ -42,4 +42,8 @@ namespace XmlDocConverter.Fluent
 			}
 		}
 	}
+
+	public class VoidDocumentContext : DocumentContext<VoidDocumentContext>
+	{
+	}
 }

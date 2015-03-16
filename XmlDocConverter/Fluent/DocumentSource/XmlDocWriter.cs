@@ -9,75 +9,89 @@ using System.Xml.Linq;
 
 namespace XmlDocConverter.Fluent
 {
-	public interface IXmlDocWriter
+	public class XmlDocWriter
 	{
-		void Write(XNode node, EmitOutputContext output);
-		void Write(XElement element, EmitOutputContext output);
-		void Write(XText text, EmitOutputContext output);
-	}
+		public delegate EmitContextX TagWriter(XmlDocWriter writer, XElement element, EmitContextX context);
 
-	public class XmlDocWriter : IXmlDocWriter
-	{
-		public XmlDocWriter()
+		public static readonly ImmutableDictionary<string, TagWriter> DefaultTagWriters;
+
+		static XmlDocWriter()
 		{
-			m_tagWriters = ImmutableDictionary.Create<string, Action<XmlDocWriter, XElement, EmitOutputContext>>();
+			var builder = ImmutableDictionary.CreateBuilder<string, TagWriter>();
+
+			builder.Add("c", (writer, element, context) => context.Write.InlineCode(writer.TrimElement(element).Value));
+			builder.Add("code", (writer, element, context) => context.Write.Code(writer.TrimElement(element).Value));
+
+			DefaultTagWriters = builder.ToImmutableDictionary();
+		}
+		
+		public XmlDocWriter()
+			:this(DefaultTagWriters)
+		{
 		}
 
-		public XmlDocWriter(ImmutableDictionary<string, Action<XmlDocWriter, XElement, EmitOutputContext>> tagWriters)
+		public XmlDocWriter(ImmutableDictionary<string, TagWriter> tagWriters)
 		{
 			m_tagWriters = tagWriters;
 		}
 
-		public virtual void Write(XNode node, EmitOutputContext output)
+		public virtual EmitContextX Write(XNode node, EmitContextX context)
 		{
 			if (node is XText)
-				Write((XText)node, output);
+				return Write((XText)node, context);
 			else if (node is XElement)
-				Write((XElement)node, output);
+				return Write((XElement)node, context);
+
+			return context;
 		}
 
-		public virtual void Write(IEnumerable<XNode> nodes, EmitOutputContext output)
+		public virtual EmitContextX Write(IEnumerable<XNode> nodes, EmitContextX context)
 		{
 			foreach (var node in nodes)
 			{
-				Write(node, output);
+				context = Write(node, context);
 			}
+			return context;
 		}
 
-		public virtual void Write(XElement element, EmitOutputContext output)
+		public virtual EmitContextX Write(XElement element, EmitContextX context)
 		{
-			Action<XmlDocWriter, XElement, EmitOutputContext> tagWriter;
+			TagWriter tagWriter;
 			if (m_tagWriters.TryGetValue(element.Name.LocalName, out tagWriter))
 			{
-				tagWriter(this, element, output);
+				return tagWriter(this, element, context);
 			}
 			else
 			{
-				var trimmedNodes = element.Nodes()
-					.Select(node =>
-						{
-							if (node.NodeType == XmlNodeType.Text)
-							{
-								if (node == element.FirstNode && node == element.LastNode)
-									return new XText(((XText)node).Value.Trim());
-								else if (node == element.FirstNode)
-									return new XText(((XText)node).Value.TrimStart());
-								else if (node == element.LastNode)
-									return new XText(((XText)node).Value.TrimEnd());								
-							}
-
-							return node;
-						});
-
-				Write(trimmedNodes, output);
+				return Write(TrimElement(element).Nodes(), context);
 			}
 		}
 
-		public virtual void Write(XText text, EmitOutputContext output)
+		public virtual XElement TrimElement(XElement element)
 		{
-			output.Write(text.Value);
+			var newElement = new XElement(element);
+
+			foreach (var node in newElement.Nodes())
+			{
+				if (node.NodeType == XmlNodeType.Text)
+				{
+					if (node == newElement.FirstNode && node == newElement.LastNode)
+						node.ReplaceWith(new XText(((XText)node).Value.Trim()));
+					else if (node == newElement.FirstNode)
+						node.ReplaceWith(new XText(((XText)node).Value.TrimStart()));
+					else if (node == newElement.LastNode)
+						node.ReplaceWith(new XText(((XText)node).Value.TrimEnd()));
+				}
+			}
+
+			return newElement;
 		}
 
-		private readonly ImmutableDictionary<string, Action<XmlDocWriter, XElement, EmitOutputContext>> m_tagWriters;
+		public virtual EmitContextX Write(XText text, EmitContextX context)
+		{
+			return context.Write.A(text.Value);
+		}
+
+		private readonly ImmutableDictionary<string, TagWriter> m_tagWriters;
 	}
 }

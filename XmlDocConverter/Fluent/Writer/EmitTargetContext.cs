@@ -21,23 +21,23 @@ namespace XmlDocConverter.Fluent
 		/// <summary>
 		/// Construct a new target context.
 		/// </summary>
-		/// <param name="writerContext">The writer context for this target.</param>
+		/// <param name="outputContext">The writer context for this target.</param>
 		/// <param name="target">The function to be called when we should write the data.</param>
-		public EmitTargetContext(EmitWriterContext writerContext, WriteDataToTargetDelegate target)
+		public EmitTargetContext(EmitOutputContext outputContext, WriteDataToTargetDelegate target)
 		{
-			Contract.Requires(writerContext != null);
+			Contract.Requires(outputContext != null);
 			Contract.Requires(target != null);
-			Contract.Ensures(WriterContext != null);
+			Contract.Ensures(OutputContext != null);
 			Contract.Ensures(Target != null);
 
-			WriterContext = writerContext;
+			OutputContext = outputContext;
 			Target = target;
 		}
 
 		/// <summary>
 		/// The writer context for this target.
 		/// </summary>
-		public readonly EmitWriterContext WriterContext;
+		public readonly EmitOutputContext OutputContext;
 
 		/// <summary>
 		/// The target to which we should write data when we are done.

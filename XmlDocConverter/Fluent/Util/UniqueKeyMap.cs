@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XmlDocConverter.Util
+namespace XmlDocConverter.Fluent.Util
 {
 	/// <summary>
 	/// This maps a set of objects that are unique within the context of this map to a set of objects that are globally

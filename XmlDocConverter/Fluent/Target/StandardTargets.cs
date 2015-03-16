@@ -35,7 +35,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				textWriter,
 				() => new EmitTargetContext(
-					context.GetWriterContext().CreateNew(),
+					new EmitOutputContext(),
 					dataSources =>
 					{
 						// Write all of the sources to the TextWriter.
@@ -75,7 +75,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				FilePathDataMapKeys[fullFilePath],
 				() => new EmitTargetContext(
-					context.GetWriterContext().CreateNew(),
+					new EmitOutputContext(),
 					dataSources =>
 					{
 						// Create the directory.
@@ -108,7 +108,8 @@ namespace XmlDocConverter.Fluent
 		}
 		
 		/// <summary>
-		/// Use a unique key map so we don't accidentally share DataMap keys with some other part of the system.
+		/// Pass file paths through a unique key map to make sure equal strings that happen to be different objects
+		/// still map to the same output context.
 		/// </summary>
 		private static Util.UniqueKeyMap<string> FilePathDataMapKeys = new Util.UniqueKeyMap<string>();
 
@@ -134,7 +135,7 @@ namespace XmlDocConverter.Fluent
 			return context.ReplaceTargetContext(
 				stringBuilderTarget,
 				() => new EmitTargetContext(
-					context.GetWriterContext().CreateNew(),
+					new EmitOutputContext(),
 					dataSources =>
 					{
 						// Write all of the sources to the TextWriter.

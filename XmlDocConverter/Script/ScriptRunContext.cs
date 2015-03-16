@@ -70,7 +70,7 @@ namespace XmlDocConverter
 				// Write all of the emit targets.
 				foreach (var target in m_emitTargets)
 				{
-					target.Target(target.WriterContext.OutputContext.Data);
+					target.Target(target.OutputContext.Data);
 				}
 				m_emitTargets.Clear();
 

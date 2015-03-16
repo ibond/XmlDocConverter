@@ -121,16 +121,16 @@ namespace XmlDocConverter.Fluent
 			return summary != null ? summary.Value : "";
 		}
 
-		public void WriteElement(string elementName, IXmlDocWriter writer, EmitOutputContext output)
+		public EmitContextX WriteElement(string elementName, XmlDocWriter writer, EmitContextX context)
 		{
 			Contract.Requires(writer != null);
-			Contract.Requires(output != null);
+			Contract.Requires(context != null);
 
 			var element = GetElement(elementName);
 			if (element == null)
-				return;
+				return context;
 
-			writer.Write(element, output);
+			return writer.Write(element, context);
 		}
 
 		/// <summary>

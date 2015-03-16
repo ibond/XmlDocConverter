@@ -26,9 +26,14 @@ namespace XmlDocConverter.Fluent
 			TDoc documentContext,
 			ConcurrentDictionary<object, object> persistentDataMap,
 			ImmutableDictionary<object, object> localDataMap,
-			EmitWriterContext writerContext)
-			: base(documentContext, persistentDataMap, localDataMap, writerContext)
+			EmitOutputContext outputContext)
+			: base(documentContext, persistentDataMap, localDataMap, outputContext)
 		{
+		}
+
+		public static implicit operator EmitContextX(EmitWriteContext<TDoc> context)
+		{
+			return new EmitContextX(context.m_persistentDataMap, context.m_localDataMap, context.m_outputContext);
 		}
 
 		// =====================================================================
@@ -84,6 +89,14 @@ namespace XmlDocConverter.Fluent
 		}
 
 
+		public static EmitWriteContext<TDoc> Source<TDoc>(this EmitWriteContext<TDoc> context, IOutputSource source)
+			where TDoc : DocumentContext
+		{
+			context.GetOutputContext().Write(source);
+			return context;
+		}
+
+
 		public static EmitWriteContext<TDoc> Link<TDoc>(this EmitWriteContext<TDoc> context, string targetKey, string contents)
 			where TDoc : DocumentContext
 		{
@@ -91,8 +104,8 @@ namespace XmlDocConverter.Fluent
 				.WithFilter(
 					new RenderFilter((string data) =>
 					{
-						object targetRef;
-						if (context.GetPersistentDataMap().TryGetValue(TargetKeyMap[targetKey], out targetRef))
+						string targetRef;
+						if(context.GetPersistentDataSubmap(LinkTargets).TryGetValue(targetKey, out targetRef))
 							return String.Format("[{0}]({1})", data, targetRef);
 						else
 							return data;
@@ -105,15 +118,14 @@ namespace XmlDocConverter.Fluent
 		public static EmitContext<TDoc> SetLinkTarget<TDoc>(this EmitContext<TDoc> context, string targetKey, string targetRef)
 			where TDoc : DocumentContext
 		{
-
-			var resultTarget = context.GetPersistentDataMap().GetOrAdd(TargetKeyMap[targetKey], targetRef);
-			if (resultTarget != (object)targetRef)
+			var resultTarget = context.GetPersistentDataSubmap(LinkTargets).GetOrAdd(targetKey, targetRef);
+			if (resultTarget != targetRef)
 				throw new Exception(String.Format("Link target has been set more than once.\n{0} -> \n\t{1}\n\t{2}", targetKey, resultTarget, targetRef));
 
 			return context;
 		}
 
-		private static Util.UniqueKeyMap<string> TargetKeyMap = new Util.UniqueKeyMap<string>();
+		private static DataSubmap<string, string> LinkTargets = new DataSubmap<string, string>();
 	}
 
 	// =====================================================================

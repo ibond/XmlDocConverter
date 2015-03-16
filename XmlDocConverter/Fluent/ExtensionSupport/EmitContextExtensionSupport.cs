@@ -91,33 +91,13 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		}
 
 		/// <summary>
-		/// Get the writer context from the context.
-		/// </summary>
-		/// <param name="context">The context from which we should get the writer context.</param>
-		/// <returns>The writer context of this context.</returns>
-		public static EmitWriterContext GetWriterContext(this EmitContext context)
-		{
-			return EmitContext.GetWriterContext(context);
-		}
-
-		/// <summary>
-		/// Get the formatter context from the context.
-		/// </summary>
-		/// <param name="context">The context from which we should get the formatter context.</param>
-		/// <returns>The formatter context of this context.</returns>
-		public static EmitFormatterContext GetFormatterContext(this EmitContext context)
-		{
-			return EmitContext.GetWriterContext(context).FormatterContext;
-		}
-
-		/// <summary>
 		/// Get the output context from the context.
 		/// </summary>
 		/// <param name="context">The context from which we should get the output context.</param>
 		/// <returns>The output context of this context.</returns>
 		public static EmitOutputContext GetOutputContext(this EmitContext context)
 		{
-			return EmitContext.GetWriterContext(context).OutputContext;
+			return EmitContext.GetOutputContext(context);
 		}
 		
 		/// <summary>
@@ -162,7 +142,7 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 			Script.CurrentRunContext.RegisterEmitTarget(targetContext);
 
 			// Update the writer context.
-			return ReplaceWriterContext(context, targetContext.WriterContext);
+			return context.ReplaceOutputContext(targetContext.OutputContext);
 		}
 
 		/// <summary>
@@ -176,63 +156,22 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		public static EmitContext<TDoc> ReplaceTargetContext<TDoc>(this EmitContext<TDoc> context, object key, Func<EmitTargetContext> createFactory)
 			where TDoc : DocumentContext
 		{
-			return ReplaceTargetContext(context, (EmitTargetContext)context.GetPersistentDataMap().GetOrAdd(key, k => createFactory()));
+			return ReplaceTargetContext(context, context.GetPersistentDataSubmap(EmitTargetSubmap).GetOrAdd(key, k => createFactory()));
 		}
 
-		/// <summary>
-		/// Replace the writer context for this emit context.
-		/// </summary>
-		/// <param name="writerContext">The new writer context.</param>
-		/// <returns>A new emit context with the writer context set to the given writer context.</returns>
-		public static EmitContext<TDoc> ReplaceWriterContext<TDoc>(this EmitContext<TDoc> context, EmitWriterContext writerContext)
-			where TDoc : DocumentContext
-		{
-			Contract.Requires(context != null);
-			Contract.Requires(writerContext != null);
-			Contract.Ensures(Contract.Result<TDoc>() != null);
+		private static DataSubmap<object, EmitTargetContext> EmitTargetSubmap = new DataSubmap<object, EmitTargetContext>();
 
-			return context.GetWriterContext() != writerContext
-				? EmitContext<TDoc>.CopyWith(context, writerContext: writerContext)
-				: context;
-		}
-
-		/// <summary>
-		/// Replace the formatter for this emit context.
-		/// </summary>
-		/// <param name="formatter">The formatter to be used for this context.</param>
-		/// <returns>A new emit context with an updated formatter.</returns>
-		public static EmitContext<TDoc> ReplaceFormatterContext<TDoc>(this EmitContext<TDoc> context, EmitFormatterContext formatter)
-			where TDoc : DocumentContext
-		{
-			return context.GetWriterContext().FormatterContext != formatter
-				? ReplaceWriterContext(context, context.GetWriterContext().ReplaceFormatterContext(formatter))
-				: context;
-		}
 
 		/// <summary>
 		/// Replace the output context for this emit context.
 		/// </summary>
 		/// <param name="output">The output context to be used for this context.</param>
 		/// <returns>A new emit context with an updated output context.</returns>
-		public static EmitContext<TDoc> ReplaceOutputContext<TDoc>(this EmitContext<TDoc> context, EmitOutputContext output)
+		public static EmitContext<TDoc> ReplaceOutputContext<TDoc>(this EmitContext<TDoc> context, EmitOutputContext outputContext)
 			where TDoc : DocumentContext
 		{
-			return ReplaceWriterContext(context, context.GetWriterContext().ReplaceOutputContext(output));
-		}
-
-		/// <summary>
-		/// Update a formatter extension.
-		/// </summary>
-		/// <param name="formatter">The formatter to be used for this context.</param>
-		/// <returns>A new emit context with an updated formatter extension.</returns>
-		public static EmitContext<TDoc> UpdateFormatterExtension<TDoc, TFormatter>(this EmitContext<TDoc> context, TFormatter defaultValue, Func<TFormatter, TFormatter> updater)
-			where TDoc : DocumentContext
-			where TFormatter : FormatterExtension
-		{
-			var prevExtension = context.GetWriterContext().FormatterContext.GetFormatterExtension(defaultValue);
-			var newExtension = updater(prevExtension);
-			return prevExtension != newExtension
-				? context.ReplaceFormatterContext(context.GetFormatterContext().ReplaceFormatterExtension(newExtension))
+			return context.GetOutputContext() != outputContext
+				? EmitContext<TDoc>.CopyWith(context, outputContext: outputContext)
 				: context;
 		}
 
@@ -241,16 +180,14 @@ namespace XmlDocConverter.Fluent.EmitContextExtensionSupport
 		/// </summary>
 		/// <param name="documentContext">The new document context to be used for this context.</param>
 		/// <returns>A new emit context with an updated document context.</returns>
-		public static EmitContext<NewDocumentContextType>
-			ReplaceDocumentContext<NewDocumentContextType, TDoc>(this EmitContext<TDoc> context, NewDocumentContextType documentContext)
-			where NewDocumentContextType : DocumentContext
+		public static EmitContext<TDoc>	ReplaceDocumentContext<TDoc>(this EmitContext context, TDoc documentContext)
 			where TDoc : DocumentContext
 		{
 			Contract.Requires(context != null);
 			Contract.Requires(documentContext != null);
-			Contract.Ensures(Contract.Result<EmitContext<NewDocumentContextType>>() != null);
+			Contract.Ensures(Contract.Result<EmitContext<TDoc>>() != null);
 
-			return EmitContext<NewDocumentContextType>.CopyWith(context, documentContext);
+			return EmitContext.CopyWith(context, documentContext);
 		}
 	}
 }

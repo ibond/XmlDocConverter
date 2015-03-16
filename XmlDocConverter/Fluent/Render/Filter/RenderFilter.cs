@@ -33,7 +33,6 @@ namespace XmlDocConverter.Fluent
 		public static readonly RenderFilter Identity = new RenderFilter((IEnumerable<string> data) => data);
 		public static readonly RenderFilter Trim = new RenderFilter(str => str.Trim());
 		
-
 		public static readonly RenderFilter CollapseNewlines = new RenderFilter(
 			str =>
 			{
@@ -45,6 +44,12 @@ namespace XmlDocConverter.Fluent
 
 				return result;
 			});
+
+		public static RenderFilter Indent(string indentString, int count = 1)
+		{
+			var fullIndentString = string.Join("", Enumerable.Repeat(indentString, count));
+			return new RenderFilter(data => fullIndentString + data.Replace("\n", "\n" + fullIndentString));
+		}
 
 		public static RenderFilter Replace(string oldValue, string newValue)
 		{

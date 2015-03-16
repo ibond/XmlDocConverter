@@ -91,7 +91,7 @@ namespace XmlDocConverter.Fluent
 		}
 
 
-		public static EmitContext<TDoc> Using<TDoc>(this EmitContext<TDoc> context, Func<IXmlDocWriter> docWriter)
+		public static EmitContext<TDoc> Using<TDoc>(this EmitContext<TDoc> context, Func<XmlDocWriter> docWriter)
 			where TDoc : DocumentContext<TDoc>
 		{
 			Contract.Requires(context != null);
@@ -109,22 +109,20 @@ namespace XmlDocConverter.Fluent
 			Contract.Requires(context != null);
 			Contract.Requires(elementName != null);
 
-			context.GetDocumentContext().Entry.WriteElement(elementName, context.CreateXmlDocWriter(), context.GetOutputContext());
-
-			return context;
+			return context.GetDocumentContext().Entry.WriteElement(elementName, context.CreateXmlDocWriter(), context)
+				.ReplaceDocumentContext(context.Item);
 		}
 
 		public static EmitContext<DocElementContext> WriteXmlElement(this EmitContext<DocElementContext> context)
 		{
 			Contract.Requires(context != null);
 			
-			context.CreateXmlDocWriter().Write(context.GetDocumentContext().Element, context.GetOutputContext());
-
-			return context;
+			return context.CreateXmlDocWriter().Write(context.GetDocumentContext().Element, context)
+				.ReplaceDocumentContext(context.Item);
 		}
 
 
-		public static IXmlDocWriter CreateXmlDocWriter(this EmitContext context)
+		public static XmlDocWriter CreateXmlDocWriter(this EmitContext context)
 		{
 			Contract.Requires(context != null);
 
@@ -133,6 +131,6 @@ namespace XmlDocConverter.Fluent
 
 		private static readonly object XmlDocWriterKey = new object();
 
-		private static readonly Func<IXmlDocWriter> Default = () => new XmlDocWriter();
+		private static readonly Func<XmlDocWriter> Default = () => new XmlDocWriter();
 	}
 }

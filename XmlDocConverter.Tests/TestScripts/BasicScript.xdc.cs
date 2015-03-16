@@ -10,7 +10,7 @@ class Script
 	static void Run()
 	{
 		Emit.Begin
-			.Using(MarkdownEmitWriter.GitHub)
+			.Using(MarkdownFormatter.GitHub)
 			.InDirectory(@"C:\Work\temp\xdc_test")
 			.From(@"C:\Work\ProcessArgumentTools\ProcessArgumentTools\bin\Release\ProcessArgumentTools.dll")
 			.ToFile("ProcessArgumentTools.md")
